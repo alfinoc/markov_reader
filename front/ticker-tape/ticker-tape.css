@@ -1,0 +1,29 @@
+#placeholder {
+  opacity: 0;
+}
+
+#text {
+  position: absolute;
+  top: 0px;
+  width: 100vw;
+}
+
+#text div {
+  box-sizing: border-box;
+  line-height: 30px;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: justify;
+  width: 100%;
+}
+
+:host {
+  box-sizing: border-box;
+  display: block;
+  font-size: larger;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  width: 100vw;
+}

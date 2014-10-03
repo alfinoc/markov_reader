@@ -42,7 +42,7 @@ class Reader:
    """
    seeds the reader with a starting phrase 'start'
    after a call to seed(start), subsequent next() calls will behave as if the previous
-   call to next() returned stat
+   call to next() returned start
    raises ValueError if 'start' is not a known term
    """
    def seed(self, start):
@@ -78,7 +78,7 @@ class Reader:
    """
    returns a map of token to successor map, where each successor map maps a successor
    to its number of occurrances in tokens. in other words, for every successive pair
-   of tokens (a, b) and returned map m, m[a][b] returns the number of times "a b" appears
+   of tokens (a, b) and returned map m, m[a][b] is the number of times "a b" appears
    in immediate sequence in tokens
 
    the returned map uses integer indices to identify tokens. these indices correspond to

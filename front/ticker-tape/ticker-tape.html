@@ -1,0 +1,89 @@
+<link rel="import" href="word-info/word-info.html">
+
+<polymer-element name="ticker-tape">
+   <template>
+      <link rel="stylesheet" type="text/css" href="ticker-tape.css">
+      <div id="text">
+         <div id="placeholder"></div>
+      </div>
+   </template>
+   <script>
+
+Polymer('ticker-tape', {
+   created: function() {
+      this.bufferPixels = 100;
+      this.pixelsPerSecond = 20;
+   },
+
+   domReady: function() {
+      this.$.text.style.top = this.clientHeight + 'px';   
+      setInterval(this.scrollUpOnePixel.bind(this), 1000 / this.pixelsPerSecond);
+      this.sources = this.querySelectorAll('text-source').array();
+
+   /*      
+      // Debug fixed line.
+      this.sources = this.querySelectorAll('text-source').array();
+      this.$.text.style.top = '300px';
+      this.spawnLine();
+   */
+   },
+
+   scrollUpOnePixel: function() {
+      var lines = this.$.text.children;
+      var textStyle = this.$.text.style;
+      // Raise text block by a single pixel.
+      textStyle.top = parseInt(textStyle.top) - 1 + 'px';
+
+      // Remove the lines that have scrolled off the top.
+      if (parseInt(textStyle.top) < -this.bufferPixels) {
+         if (lines.length > 1) {
+            // The placeholder is lines[0], so remove the next.
+            var height = lines[1].clientHeight;
+            lines[1].remove();
+            textStyle.top = parseInt(textStyle.top) + height + 'px';
+         }
+      }
+
+      // Spawn new lines up to a 100px buffer.
+      while (parseInt(this.$.text.style.top) + this.$.text.offsetHeight <
+            this.clientHeight + this.bufferPixels)
+         this.spawnLine();
+   },
+
+   tick: function() {
+
+   },
+
+   // adds a single line at the bottom
+   spawnLine: function() {
+      // TODO: source.isEmpty() check for when the source has no more words left (show loader).
+
+      // Fill the placeholder with words until it overflows to a second line.
+      var placeholder = this.$.placeholder;
+      var next = this.sources[0].peek();
+      // Prime with one token to get computed line height.
+      placeholder.innerHTML = next;
+      var initialHeight = placeholder.clientHeight;
+      while (placeholder.clientHeight == initialHeight) {
+         this.sources[0].next();
+         next = this.sources[0].peek();
+         placeholder.innerHTML += ' ' + next;
+      }
+
+      // TODO: Instead of a DIV, make a ticker-tape-line here.
+      var newLine = document.createElement('div');
+      newLine.innerHTML = placeholder.innerHTML;
+      this.$.text.appendChild(newLine);
+      placeholder.innerHTML = '';
+
+      // TODO(bug): This doesn't handle hiphen word breaks.
+      newLine.style.height = initialHeight + 'px';
+   },
+
+   viewHeight: function() {
+      return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+   }
+});
+
+   </script>
+</polymer-element>
