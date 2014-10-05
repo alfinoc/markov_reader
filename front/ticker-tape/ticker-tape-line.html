@@ -34,26 +34,23 @@
          }
 
          .infobox {
-            //display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-
-            height: 200px;
-            width: 200px;
-         }
-
-         :host(:hover) .infobox {
-            display: block;
-         }
-
-         td[middle] {
-            opacity: 0;
+            
          }
 
          td {
-            //border: 1px solid black;
+            text-align: center;
          }
+
+         /* Hack to create padding on the whole table. nth-child(2) is because
+            :first-child is actually the template :( */
+         td:nth-child(2) { padding-left: 5px; }
+         td:last-child { padding-right: 5px; }
+
+         /* TODO: Line height makes it so these are goofy. If line-height hacks
+            can be resolved, this might be able to come back.
+         tr:nth-child(2) td { padding-top: 5px; }
+         tr:last-child td { padding-bottom: 5px; }
+         */
 
          span:hover + table {
             opacity: 1;
@@ -64,6 +61,7 @@
          }
 
          table {
+            border-radius: 3px;
             transition: opacity 0.2s ease-in-out;
             pointer-events: none;
             opacity: 0;
@@ -71,11 +69,12 @@
             top: 0px;
             left: 0px;
             border-collapse: collapse;
+            z-index: 1;
          }
       </style>
       <span>{{ word }}</span>
       <table id="snippet1">
-         <template repeat="{{ row, i in snippet1 | toTable }}">
+         <template repeat="{{ row, i in completeTable }}">
             <tr>
                <template repeat="{{ cell, j in row }}">
                   <td middle?="{{ isCenterCell(i, j, row.length) }}">{{ cell }}</td>
@@ -90,6 +89,10 @@
             word: '',
             snippet1: ['this', 'is', 'a', 'path', 'lolfive'],
             snippet2: ['f', 'g', 'h', 'i', 'j']
+         },
+
+         computed: {
+            completeTable: "union(toTable(snippet1), invertRows(toTable(snippet2)))"
          },
 
          domReady: function() {
@@ -113,14 +116,42 @@
             return table;
          },
 
+         // Returns a new 2D array with each entry containing the non-empty entry from
+         // table1 or table2. If both have non-empty entries, table1's is used. If
+         // neither do, '' is used. Assumes table1 and table2 have matching dimensions.
+         union: function(table1, table2) {
+            var res = [];
+            for (var i = 0; i < table1.length; i++) {
+               var row = [];
+               for (var j = 0; j < table1[i].length; j++)
+                  row.push(table1[i][j] || table2[i][j] || '');
+               res.push(row);
+            }
+            return res;
+         },
+
+         // Returns true iff i and j both equal length / 2 (int div).
          isCenterCell: function(i, j, length) {
             return i == j && i == Math.floor(length / 2);
          },
 
+         // Returns a new 2D array with the entries of table except with the rows in
+         // reverse order.
+         invertRows: function(table) {
+            var res = [];
+            for (var i = table.length - 1; i >= 0; i--)
+               res.push(table[i]);
+            return res;
+         },
+
+         // Sets the top/left positions so that the middle <td> in table aligns with
+         // the <td> marked with attribute 'middle'.
          positionTable: function(table) {
             var middle = table.querySelector('td[middle]');
-            table.style.top = -middle.offsetTop + 'px';
-            table.style.left = -middle.offsetLeft + 'px';
+            if (!middle) return;
+            // TODO: figure out why this needs -1.
+            table.style.top = -middle.offsetTop - 1 + 'px';
+            table.style.left = -middle.offsetLeft - 1 + 'px';
          }
       });
    </script>
