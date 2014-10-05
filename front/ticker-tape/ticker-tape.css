@@ -8,8 +8,9 @@
   width: 100vw;
 }
 
-#text div {
+#text ticker-tape-line, #placeholder {
   box-sizing: border-box;
+  display: block;
   line-height: 30px;
   overflow: hidden;
   padding-left: 10px;

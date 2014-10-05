@@ -1,0 +1,85 @@
+<!--<link rel="import" href="word-info/word-info.html">-->
+
+<polymer-element name="ticker-tape-line" attributes="height line">
+   <template>
+      <template repeat="{{ word in line | toWordArray }}">
+         <word-info word="{{ word }}"></word-info>
+      </template>
+   </template>
+   <script>
+      Polymer('ticker-tape-line', {
+         publish: {
+            line: ''
+         },
+
+         toWordArray: function(str) {
+            return str.trim().split(" ");
+         }
+      });
+   </script>
+</polymer-element>
+
+<polymer-element name="word-info" attributes="word">
+
+   <template>
+      <style>
+         :host {
+            position: relative;
+            display: inline;
+         }
+
+         .infobox {
+            //display: none;
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            background-color: blue;
+            opacity: 0.5;
+            height: 200px;
+            width: 200px;
+         }
+
+         :host(:hover) .infobox {
+            display: block;
+         }
+
+         table {
+
+         }
+      </style>
+      <table>
+         <template repeat="{{ word1, i in snippet1 }}">
+            <tr>
+            <template repeat="{{ word2, j in snippet2 }}">
+               <td>{{ getSnippetTableValue(i, j) }}</td>
+            </template>
+            </tr>
+         </template>
+      </table>
+      <span>{{ word }}</span>
+      <div class="infobox"></div>
+   </template>
+   <script>
+      Polymer('word-info', {
+         publish: {
+            word: '',
+            snippet1: ['a', 'b', 'c', 'd', 'e'],
+            snippet2: ['f', 'g', 'h', 'i', 'j']
+         },
+
+         getSnippetTableValue: function(i, j) {
+            if (i == undefined || j == undefined || i < 0 || j < 0 ||
+                i >= this.snippet1.length || j >= this.snippet2.length)
+               return '';
+
+            if (i == j)
+               if (i == Math.floor(this.snippet1.length / 2))
+                  return this.word;
+               else
+                  return this.snippet1[i];
+               
+            return '';
+         }
+      });
+   </script>
+</polymer-element>

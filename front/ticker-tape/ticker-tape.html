@@ -1,4 +1,4 @@
-<link rel="import" href="word-info/word-info.html">
+<link rel="import" href="ticker-tape-line.html">
 
 <polymer-element name="ticker-tape">
    <template>
@@ -16,16 +16,16 @@ Polymer('ticker-tape', {
    },
 
    domReady: function() {
+      /*
       this.$.text.style.top = this.clientHeight + 'px';   
       setInterval(this.scrollUpOnePixel.bind(this), 1000 / this.pixelsPerSecond);
       this.sources = this.querySelectorAll('text-source').array();
-
-   /*      
+ */
+   
       // Debug fixed line.
       this.sources = this.querySelectorAll('text-source').array();
-      this.$.text.style.top = '300px';
+      this.$.text.style.top = '100px';
       this.spawnLine();
-   */
    },
 
    scrollUpOnePixel: function() {
@@ -71,8 +71,8 @@ Polymer('ticker-tape', {
       }
 
       // TODO: Instead of a DIV, make a ticker-tape-line here.
-      var newLine = document.createElement('div');
-      newLine.innerHTML = placeholder.innerHTML;
+      var newLine = document.createElement('ticker-tape-line');
+      newLine.line = placeholder.innerHTML;
       this.$.text.appendChild(newLine);
       placeholder.innerHTML = '';
 
