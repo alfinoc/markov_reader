@@ -1,8 +1,13 @@
-<!--<link rel="import" href="word-info/word-info.html">-->
-
 <polymer-element name="ticker-tape-line" attributes="height line">
    <template>
-      <template repeat="{{ word in line | toWordArray }}">
+      <style>
+         word-info:last-child {
+            display: inline-flex;
+            height: 0px;
+            overflow: hidden;
+         }
+      </style>
+      <template repeat="{{ word, i in line | toWordArray }}">
          <word-info word="{{ word }}"></word-info>
       </template>
    </template>
@@ -25,16 +30,15 @@
       <style>
          :host {
             position: relative;
-            display: inline;
+            display: inline-block;
          }
 
          .infobox {
             //display: none;
             position: absolute;
-            top: -50%;
-            left: -50%;
-            background-color: blue;
-            opacity: 0.5;
+            top: 0;
+            left: 0;
+
             height: 200px;
             width: 200px;
          }
@@ -43,42 +47,80 @@
             display: block;
          }
 
-         table {
+         td[middle] {
+            opacity: 0;
+         }
 
+         td {
+            //border: 1px solid black;
+         }
+
+         span:hover + table {
+            opacity: 1;
+         }
+
+         span {
+            cursor: pointer;
+         }
+
+         table {
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: none;
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            border-collapse: collapse;
          }
       </style>
-      <table>
-         <template repeat="{{ word1, i in snippet1 }}">
+      <span>{{ word }}</span>
+      <table id="snippet1">
+         <template repeat="{{ row, i in snippet1 | toTable }}">
             <tr>
-            <template repeat="{{ word2, j in snippet2 }}">
-               <td>{{ getSnippetTableValue(i, j) }}</td>
-            </template>
+               <template repeat="{{ cell, j in row }}">
+                  <td middle?="{{ isCenterCell(i, j, row.length) }}">{{ cell }}</td>
+               </template>
             </tr>
          </template>
       </table>
-      <span>{{ word }}</span>
-      <div class="infobox"></div>
    </template>
    <script>
       Polymer('word-info', {
          publish: {
             word: '',
-            snippet1: ['a', 'b', 'c', 'd', 'e'],
+            snippet1: ['this', 'is', 'a', 'path', 'lolfive'],
             snippet2: ['f', 'g', 'h', 'i', 'j']
          },
 
-         getSnippetTableValue: function(i, j) {
-            if (i == undefined || j == undefined || i < 0 || j < 0 ||
-                i >= this.snippet1.length || j >= this.snippet2.length)
-               return '';
+         domReady: function() {
+            this.positionTable(this.$.snippet1);
+         },
 
-            if (i == j)
-               if (i == Math.floor(this.snippet1.length / 2))
-                  return this.word;
-               else
-                  return this.snippet1[i];
-               
-            return '';
+         // Returns a 2D array with both dimensions set to snippet.length. In the entries
+         // where i == j, holds snippet[i]. Otherwise, snippet[i][j] = '';
+         toTable: function(snippet) {
+            if (!snippet)
+               return [];
+            var table = [];
+            for (var i = 0; i < snippet.length; i++) {
+               var row = [];
+               for (var j = 0; j < snippet.length; j++)
+                  row.push('');
+               row[i] = snippet[i];
+               table.push(row);
+            }
+            table[Math.floor(i / 2)][Math.floor(j / 2)] = this.word;
+            return table;
+         },
+
+         isCenterCell: function(i, j, length) {
+            return i == j && i == Math.floor(length / 2);
+         },
+
+         positionTable: function(table) {
+            var middle = table.querySelector('td[middle]');
+            table.style.top = -middle.offsetTop + 'px';
+            table.style.left = -middle.offsetLeft + 'px';
          }
       });
    </script>
