@@ -17,13 +17,12 @@ def index(a, x):
 TERMINATOR = list('.?,!:;')
 QUOTES = list('"')
 
-
 """
 A scanner for reading from a source text Index.
 """
 class Reader:
    """
-   builds a reader around the provided index, 
+   builds a scanner around the provided index
    """
    def __init__(self, index):
       self.index = index
@@ -88,6 +87,16 @@ def index(a, x):
       return i
    raise ValueError
 
+"""
+given a list of string, returns a map with a key for every string in 'list', mapped
+to index. assumes that returned map is an injection
+"""
+def invertedMap(list):
+   res = {}
+   for i in range(0, len(list)):
+      res[list[i]] = i
+   return res
+
 #DEBUG = False  # makes token indexing more transparent
 TERMINATOR = list('.?,!:;')
 QUOTES = list('"')
@@ -99,14 +108,17 @@ words that follow w can be retrived in the form of a frequency distribution.
 """
 class Index:
    def parseFile(self, filename):
-      tokens = self.__getTokens(open(filename))
+      self.tokens = self.__getTokens(open(filename))
       self.filename = filename
-      self.dictionary = list(set(tokens))
+      self.dictionary = list(set(self.tokens))
       #TODO: necessary? not if the index is just an ID
       self.dictionary.sort()
-      self.successors = self.__getFrequencyMap(tokens)
+      # store the source as a list of word ids with full string values in self.dictionary
+      strToId = invertedMap(self.dictionary)
+      self.sourceText = map(lambda str: strToId[str], self.tokens)
+      self.successors = self.__getFrequencyMap(self.tokens)
       #TODO: self.last should go in reader entirely
-      self.last = index(self.dictionary, tokens[0]) if len(tokens) != 0 else None
+      self.last = index(self.dictionary, self.tokens[0]) if len(self.tokens) != 0 else None
 
    """
    returns a map from id to count, where each id is a successor (appears immediately after
@@ -127,21 +139,30 @@ class Index:
 
    """
    writes the index to the provided Redis store with the following <k,v> format:
+      filename:src -> list<id>
       filename:id -> term_string
       filename:id:succ -> HASH<id, count>
       filename:term -> id
    with id being the term id for every term stored in the index.
    """
    def serialize(self, store):
-      #TODO: instead of using the filename as a namespace, instead use some ID
-      #      that way we can use different files with the same name.
+      def prefixWithFile(keyId):
+         return self.filename + ':' + str(keyId)
+
+      # filename:src -> list<id>
+      for keyId in self.sourceText:
+         store.rpush(self.filename + ':src', keyId)
+
+      # filename:id -> term_string
       for i in range(0, len(self.dictionary)):
-         store.set(self.filename + ':' + str(i), self.dictionary[i])
+         store.set(prefixWithFile(i), self.dictionary[i])
+
+      # filename:id:succ -> HASH<id, count>
       for keyId in self.successors:
          copy = dict()
          for succ in self.successors[keyId]:
             copy[str(succ)] = str(self.successors[keyId][succ])
-         store.hmset(self.filename + ':' + str(keyId) + ':succ', copy)
+         store.hmset(prefixWithFile(keyId) + ':succ', copy)
 
    """
    returns the whitespace tokens from the file, making each terminator punctuator its own
