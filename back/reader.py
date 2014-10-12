@@ -28,6 +28,7 @@ TERMINATOR = list('.?,!:;')
 BRIDGE = ['--', '---', '...', '/']
 IGNORE = list('"()[]_\'')
 
+
 """
 A scanner for reading from a source text Index.
 """
@@ -89,12 +90,52 @@ class Reader:
       raise ValueError
 
 """
+a text index stored in a Redis database
+"""
+class SerialIndex:
+   def __init__(self, filename, store):
+      self.filename = filename
+      self.store = store
+
+      self.successorCache = {}
+
+   # inherited documentation
+   def getFirstId(self):
+      return self.store.lindex(self.filename + ':src', 0)
+
+   # inherited documentation
+   def getSuccessors(self, termId):
+      # fast path: cache hit
+      if termId in self.successorCache:
+         return self.successorCache[termId]
+
+      # convert Redis HASH (string keys/values) to integer python dict
+      intMap = {}
+      strMap = self.store.hgetall(self.__prefixId(termId) + ':succ')
+      for key in strMap:
+         intMap[int(key)] = int(strMap[key])
+
+      # update cache with successor map
+      self.successorCache[termId] = intMap
+      return intMap
+
+   # inherited documentation
+   def getTerm(self, termId):
+      return self.store.get(self.__prefixId(termId))
+
+   """
+   returns a string the filename, a color, then 'termId'
+   """
+   def __prefixId(self, termId):
+      return self.filename + ':' + str(termId)
+
+"""
 A pre-parsed version of the source text contained in 'filename'. Each whitespace separated
 unique word in the source is given an ID, and for any given word-id w, a collection of
 words that follow w can be retrived in the form of a frequency distribution.
 """
 class Index:
-   def parseFile(self, filename):
+   def __init__(self, filename):
       tokens = self.__getTokens(open(filename))
       self.dictionary = list(set(tokens))
       #self.dictionary.sort()
@@ -187,8 +228,8 @@ class Index:
    def __getFrequencyMap(self, tokens, tokenToId):
       result = {}
       for i in range(len(tokens) - 1):
-         first = tokenToId[tokens[i]]  #index(self.dictionary, tokens[i])      # (tokens[i], i)
-         second = tokenToId[tokens[i + 1]] #index(self.dictionary, tokens[i + 1])  # (tokens[i + 1], i)
+         first = tokenToId[tokens[i]]  # (tokens[i], i)
+         second = tokenToId[tokens[i + 1]] # (tokens[i + 1], i)
          if not first in result:
             result[first] = {}
          prevSuccessors = result[first]
