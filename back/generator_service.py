@@ -1,6 +1,8 @@
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, BadRequest
+
+from reader import *
 import redis
 
 """
@@ -31,10 +33,16 @@ class GeneratorService(object):
       randomLength = 'random_sequential' in args
 
       if self.store.exists(filename + ':src'):
-         return Response('lol generatin ' + filename)
+         index = SerialIndex(filename, self.store)
       else:
          # TODO: Automatically generate index if the file is present; else, error.
          return Response('uh oh, \'' + filename + '\' isn\'t stored!')
+
+      reader = Reader(index)
+      generatedList = [reader.previous()]
+      for i in range(length):
+         generatedList.append(reader.next())
+      return Response(str(generatedList))
 
    def get_source(self, request):
       return Response('lol srcin')
