@@ -28,7 +28,6 @@ TERMINATOR = list('.?,!:;')
 BRIDGE = ['--', '---', '...', '/']
 IGNORE = list('"()[]_\'')
 
-
 """
 A scanner for reading from a source text Index.
 """
@@ -90,7 +89,7 @@ class Reader:
       raise ValueError
 
 """
-a text index stored in a Redis database
+a text index stored in a Redis database, according to scheme laid out in Index.serialize
 """
 class SerialIndex:
    def __init__(self, filename, store):
@@ -238,13 +237,3 @@ class Index:
          else:
             prevSuccessors[second] += 1
       return result
-
-"""
-   notes:
-   you're going to want to incorporate a dec english dictionary here. for capitalization,
-   only store the lowercase version for dictionary words (exclude names).
-
-   going to need to handle terminator punctuation in a special way
-   fuck am i going to do with --? ...?
-
-"""
