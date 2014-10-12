@@ -13,9 +13,20 @@ def index(a, x):
       return i
    raise ValueError
 
+"""
+given a list of string, returns a map with a key for every string in 'list', mapped
+to index. assumes that returned map is an injection
+"""
+def invertedMap(list):
+   res = {}
+   for i in range(0, len(list)):
+      res[list[i]] = i
+   return res
+
 #DEBUG = False  # makes token indexing more transparent
 TERMINATOR = list('.?,!:;')
-QUOTES = list('"')
+BRIDGE = ['--', '---', '...', '/']
+IGNORE = list('"()[]_\'')
 
 """
 A scanner for reading from a source text Index.
@@ -26,8 +37,7 @@ class Reader:
    """
    def __init__(self, index):
       self.index = index
-      # TODO: lol this won't work in general
-      self.last = self.index.last
+      self.last = self.index.getFirstId();
 
    """
    let p be the last phrase returned. a subsequent call to "next()" returns a successor s
@@ -79,46 +89,25 @@ class Reader:
       raise ValueError
 
 """
-Locate the leftmost value in 'a' exactly equal to 'x'
-"""
-def index(a, x):
-   i = bisect_left(a, x)
-   if i != len(a) and a[i] == x:
-      return i
-   raise ValueError
-
-"""
-given a list of string, returns a map with a key for every string in 'list', mapped
-to index. assumes that returned map is an injection
-"""
-def invertedMap(list):
-   res = {}
-   for i in range(0, len(list)):
-      res[list[i]] = i
-   return res
-
-#DEBUG = False  # makes token indexing more transparent
-TERMINATOR = list('.?,!:;')
-QUOTES = list('"')
-
-"""
 A pre-parsed version of the source text contained in 'filename'. Each whitespace separated
 unique word in the source is given an ID, and for any given word-id w, a collection of
 words that follow w can be retrived in the form of a frequency distribution.
 """
 class Index:
    def parseFile(self, filename):
-      self.tokens = self.__getTokens(open(filename))
+      tokens = self.__getTokens(open(filename))
+      self.dictionary = list(set(tokens))
+      #self.dictionary.sort()
+      tokenToId = invertedMap(self.dictionary)
+      self.sourceText = map(lambda str: tokenToId[str], tokens)
+      self.successors = self.__getFrequencyMap(tokens, tokenToId)
       self.filename = filename
-      self.dictionary = list(set(self.tokens))
-      #TODO: necessary? not if the index is just an ID
-      self.dictionary.sort()
-      # store the source as a list of word ids with full string values in self.dictionary
-      strToId = invertedMap(self.dictionary)
-      self.sourceText = map(lambda str: strToId[str], self.tokens)
-      self.successors = self.__getFrequencyMap(self.tokens)
-      #TODO: self.last should go in reader entirely
-      self.last = index(self.dictionary, self.tokens[0]) if len(self.tokens) != 0 else None
+
+   """
+   returns the id of the first token in the source text, or None if there are no tokens.
+   """
+   def getFirstId(self):
+      return self.sourceText[0] if len(self.sourceText) != 0 else None
 
    """
    returns a map from id to count, where each id is a successor (appears immediately after
@@ -171,9 +160,9 @@ class Index:
    def __getTokens(self, file):
       tokens = []
       for line in file:
-         # handle terminators and quotes specially
+         # handle terminators and the ignore blacklist specially
          line = list(line)
-         line = filter(lambda char : not char in QUOTES, line)
+         line = filter(lambda char : not char in IGNORE, line)
          for i in range(len(line)):
             if line[i] in TERMINATOR:
                line.insert(i, ' ')
@@ -190,16 +179,16 @@ class Index:
    returns a map of token to successor map, where each successor map maps a successor
    to its number of occurrances in tokens. in other words, for every successive pair
    of tokens (a, b) and returned map m, m[a][b] is the number of times "a b" appears
-   in immediate sequence in tokens
+   in immediate sequence in tokens.
 
-   the returned map uses integer indices to identify tokens. these indices correspond to
-   the values stored in self.dictionary
+   the returned map uses integer indices to identify tokens. bijection 'tokenToId'
+   maps token strings to their respective ids.
    """
-   def __getFrequencyMap(self, tokens):
+   def __getFrequencyMap(self, tokens, tokenToId):
       result = {}
       for i in range(len(tokens) - 1):
-         first  = index(self.dictionary, tokens[i])      # (tokens[i], i)
-         second = index(self.dictionary, tokens[i + 1])  # (tokens[i + 1], i)
+         first = tokenToId[tokens[i]]  #index(self.dictionary, tokens[i])      # (tokens[i], i)
+         second = tokenToId[tokens[i + 1]] #index(self.dictionary, tokens[i + 1])  # (tokens[i + 1], i)
          if not first in result:
             result[first] = {}
          prevSuccessors = result[first]
