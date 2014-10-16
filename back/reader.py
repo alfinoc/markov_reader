@@ -3,6 +3,7 @@ from random import uniform
 from collections import OrderedDict
 from copy import copy
 import redis
+import ply.lex as lex
 
 """
 Locate the leftmost value in 'a' exactly equal to 'x'
@@ -22,11 +23,6 @@ def invertedMap(list):
    for i in range(0, len(list)):
       res[list[i]] = i
    return res
-
-#DEBUG = False  # makes token indexing more transparent
-TERMINATOR = list('.?,!:;')
-BRIDGE = ['--', '---', '...', '/']
-IGNORE = list('"()[]_\'')
 
 """
 A scanner for reading from a source text Index.
@@ -128,6 +124,26 @@ class SerialIndex:
    def __prefixId(self, termId):
       return self.filename + ':' + str(termId)
 
+# Lexer rules
+terminators = '.?,!:;'
+literals = terminators + '/'
+tokens = (
+   'EN_DASH',
+   'EM_DASH',
+   'ELLIPSIS',
+   'WORD',
+)
+t_EN_DASH  = r'--'
+t_EM_DASH  = r'---'
+t_ELLIPSIS = r'\.\.\.'
+t_WORD     = r'\w+-\w+|\w+\'\w+|\w+'  # Allow all words, contractions, and dashed words.
+t_ignore  = ' \t\n()[]"*-\''
+
+# Error handling rule.
+def t_error(t):
+    print "Illegal character '%s'" % t.value[0]
+    t.lexer.skip(1)
+
 """
 A pre-parsed version of the source text contained in 'filename'. Each whitespace separated
 unique word in the source is given an ID, and for any given word-id w, a collection of
@@ -198,22 +214,18 @@ class Index:
    token and removing all quotes (double and single)
    """
    def __getTokens(self, file):
-      tokens = []
+      tokenized = []
+      lexer = lex.lex()
       for line in file:
-         # handle terminators and the ignore blacklist specially
-         line = list(line)
-         line = filter(lambda char : not char in IGNORE, line)
-         for i in range(len(line)):
-            if line[i] in TERMINATOR:
-               line.insert(i, ' ')
-               i += 1
-         line = ''.join(line)
-
-         tokens += line.split()
+         lexer.input(line)
+         while True:
+           tok = lexer.token()
+           if not tok: break
+           tokenized.append(tok.value)
 
       # TODO: correct capitalization on non-names
 
-      return tokens
+      return tokenized
 
    """
    returns a map of token to successor map, where each successor map maps a successor
