@@ -84,45 +84,46 @@ class Reader:
 
       raise ValueError
 
+def strMapToInt(strMap):
+   intMap = {}
+   for key in strMap:
+      if key == 'pit' or strMap[key] == 'pit':
+         print 'stop, man!'
+      intMap[int(key)] = int(strMap[key])
+   return intMap
+
 """
 a text index stored in a Redis database, according to scheme laid out in Index.serialize
 """
 class SerialIndex:
    def __init__(self, filename, store):
+      # TODO: this is a difference between serialindex and index -- one has
+      # an intrinsic filename and the other does not
       self.filename = filename
       self.store = store
-
       self.successorCache = {}
 
-   # inherited documentation
+   # Index documentation
    def getFirstId(self):
       return self.store.lindex(self.filename + ':src', 0)
 
-   # inherited documentation
+   # Index documentation
    def getSuccessors(self, termId):
       # fast path: cache hit
       if termId in self.successorCache:
          return self.successorCache[termId]
 
       # convert Redis HASH (string keys/values) to integer python dict
-      intMap = {}
-      strMap = self.store.hgetall(self.__prefixId(termId) + ':succ')
-      for key in strMap:
-         intMap[int(key)] = int(strMap[key])
+      strMap = self.store.hgetall(str(termId) + ':succ')
+      intMap = strMapToInt(strMap)
 
       # update cache with successor map
       self.successorCache[termId] = intMap
       return intMap
 
-   # inherited documentation
+   # Index documentation
    def getTerm(self, termId):
-      return self.store.get(self.__prefixId(termId))
-
-   """
-   returns a string the filename, a color, then 'termId'
-   """
-   def __prefixId(self, termId):
-      return self.filename + ':' + str(termId)
+      return self.store.get(termId)
 
 # Lexer rules
 terminators = '.?,!:;'
@@ -187,44 +188,69 @@ class Index:
       filename:src -> list<id>
       filename:id -> term_string
       filename:id:succ -> HASH<id, count>
-      filename:term -> id
+
+      last_term_id
+
+      <id> -> term_string
+      <term_string>:id -> <id>
+      <filename>:src -> list<id>
+      <id>:succ -> HASH<filename:<id>, count>
+      <id>:positions -> LIST<filename:id>
    with id being the term id for every term stored in the index.
    """
    def serialize(self, store):
-      def prefixWithFile(keyId):
-         return self.filename + ':' + str(keyId)
+      # the canonical id is the word's id in the Redis store, which may be different
+      # from the one used internally. getCanonicalId will return the one and only
+      # (potentially brand new) ID for the term referenced by the given instanceId.
+      tokenToId = invertedMap(self.dictionary)
+      canonMemo = {}  # avoid repeated Redis lookups for a bagillian 'the's
+      def getCanonicalId(instanceId):
+         if instanceId in canonMemo:
+            return canonMemo[instanceId]
+         canonKey = store.get(self.dictionary[instanceId] + ':id')
+         if canonKey == None:
+            canonKey = store.incr('last_term_id')
+            # id -> term_string
+            # term_string:id -> id
+            store.set(canonKey, self.dictionary[instanceId])
+            store.set(self.dictionary[instanceId] + ':id', canonKey)
+         canonMemo[instanceId] = str(canonKey)
+         return str(canonKey)
+
+      def prefixWithFile(key):
+         return self.filename + ':' + str(key)
 
       # filename:src -> list<id>
       for keyId in self.sourceText:
-         store.rpush(self.filename + ':src', keyId)
+         store.rpush(prefixWithFile('src'), getCanonicalId(keyId))
 
-      # filename:id -> term_string
-      for i in range(0, len(self.dictionary)):
-         store.set(prefixWithFile(i), self.dictionary[i])
-
-      # filename:id:succ -> HASH<id, count>
+      # id:succ -> HASH<filename:id, count>
       for keyId in self.successors:
-         copy = dict()
+         canonKey = getCanonicalId(keyId) + ':succ'
+         counts = store.hgetall(canonKey)
+         # TODO/huh!: you might want to retain some file information here, but for now
+         # you just go ahead and merge count maps. makes you think: the words themselves
+         # don't really make the text, but rather word pairs, the connective tissue.
          for succ in self.successors[keyId]:
-            copy[str(succ)] = str(self.successors[keyId][succ])
-         store.hmset(prefixWithFile(keyId) + ':succ', copy)
+            canonSucc = getCanonicalId(succ)
+            if not canonSucc in counts:
+               counts[canonSucc] = 0
+            counts[canonSucc] = str(int(counts[canonSucc]) + self.successors[keyId][succ])
+         store.hmset(canonKey, counts)
 
    """
    returns the whitespace tokens from the file, making each terminator punctuator its own
    token and removing all quotes (double and single)
    """
    def __getTokens(self, file):
-      tokenized = []
       lexer = lex.lex()
+      tokenized = []
       for line in file:
          lexer.input(line)
          while True:
            tok = lexer.token()
            if not tok: break
            tokenized.append(tok.value)
-
-      # TODO: correct capitalization on non-names
-
       return tokenized
 
    """
@@ -239,8 +265,8 @@ class Index:
    def __getFrequencyMap(self, tokens, tokenToId):
       result = {}
       for i in range(len(tokens) - 1):
-         first = tokenToId[tokens[i]]  # (tokens[i], i)
-         second = tokenToId[tokens[i + 1]] # (tokens[i + 1], i)
+         first = tokenToId[tokens[i]]
+         second = tokenToId[tokens[i + 1]]
          if not first in result:
             result[first] = {}
          prevSuccessors = result[first]
