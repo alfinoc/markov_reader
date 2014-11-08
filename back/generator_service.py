@@ -78,7 +78,7 @@ class GeneratorService(object):
          Rule('/', endpoint='otherwise'),
          Rule('/generate', endpoint='text_block'),
          Rule('/source', endpoint='source'),
-         Rule('/available', endpoint='source_list')
+         Rule('/available', endpoint='source_list'),
       ])
       self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
 
