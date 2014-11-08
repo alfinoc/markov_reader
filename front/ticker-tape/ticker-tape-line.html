@@ -1,3 +1,6 @@
+<link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../bower_components/paper-focusable/paper-focusable.html">
+
 <polymer-element name="ticker-tape-line" attributes="height line">
    <template>
       <style>
@@ -8,7 +11,7 @@
          }
       </style>
       <template repeat="{{ word, i in line | toWordArray }}">
-         <word-info word="{{ word }}"></word-info>
+         <word-info isToggle word="{{ word }}"></word-info>
       </template>
    </template>
    <script>
@@ -24,27 +27,38 @@
    </script>
 </polymer-element>
 
-<polymer-element name="word-info" attributes="word">
-
+<polymer-element name="word-info" attributes="word" extends="paper-focusable">
    <template>
       <style>
          :host {
             position: relative;
             display: inline-block;
-         }
-
-         .infobox {
-            
+            outline: none;
          }
 
          td {
             text-align: center;
          }
 
+         td:not([middle]) {
+            font-size: smaller;
+         }
+
+         td[middle] {
+            cursor: pointer;
+         }
+
          /* Hack to create padding on the whole table. nth-child(2) is because
             :first-child is actually the template :( */
-         td:nth-child(2) { padding-left: 5px; }
-         td:last-child { padding-right: 5px; }
+         td:nth-child(2) {
+            padding-left: 5px;
+            text-align: left;
+         }
+
+         td:last-child {
+            padding-right: 5px;
+            text-align: right;
+         }
 
          /* TODO: Line height makes it so these are goofy. If line-height hacks
             can be resolved, this might be able to come back.
@@ -52,43 +66,56 @@
          tr:last-child td { padding-bottom: 5px; }
          */
 
-         span:hover + table {
+         span:hover + #infobox, :host([active]) #infobox {
             opacity: 1;
+           
+         }
+
+         :host([active]) #infobox {
+            pointer-events: auto;
          }
 
          span {
             cursor: pointer;
          }
 
-         table {
+         #infobox {
             border-radius: 3px;
             transition: opacity 0.2s ease-in-out;
             pointer-events: none;
             opacity: 0;
+            z-index: 1;
             position: absolute;
             top: 0px;
             left: 0px;
+            background-color: white;
+            cursor: default;
+         }
+
+         table {
             border-collapse: collapse;
-            z-index: 1;
          }
       </style>
       <span>{{ word }}</span>
-      <table id="snippet1">
-         <template repeat="{{ row, i in completeTable }}">
-            <tr>
-               <template repeat="{{ cell, j in row }}">
-                  <td middle?="{{ isCenterCell(i, j, row.length) }}">{{ cell }}</td>
-               </template>
-            </tr>
-         </template>
-      </table>
+      <div id="infobox" class="light">
+         <table>
+            <template repeat="{{ row, i in completeTable }}">
+               <tr>
+                  <template repeat="{{ cell, j in row }}">
+                     <td middle?="{{ isCenterCell(i, j, row.length) }}">{{ cell }}</td>
+                  </template>
+               </tr>
+            </template>
+         </table>
+         <paper-shadow z="1"></paper-shadow>
+      </div>
    </template>
    <script>
       Polymer('word-info', {
          publish: {
             word: '',
             snippet1: ['this', 'is', 'a', 'path', 'lolfive'],
-            snippet2: ['f', 'g', 'h', 'i', 'j']
+            snippet2: ['f', 'ghelllllla', 'h', 'i', 'j']
          },
 
          computed: {
@@ -96,7 +123,18 @@
          },
 
          domReady: function() {
-            this.positionTable(this.$.snippet1);
+            this.positionTable(this.$.infobox);
+         },
+
+         // Ensure all other word-info's are unselected.
+         activeChanged: function() {
+            if (this.active) {
+               var infos = document.querySelectorAll('* /deep/ word-info[active]').array();
+               infos.forEach(function(info) {
+                  if (this != info)
+                     info.active = false;
+               }.bind(this));
+            }
          },
 
          // Returns a 2D array with both dimensions set to snippet.length. In the entries
