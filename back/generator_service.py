@@ -24,11 +24,9 @@ class GeneratorService(object):
       args = request.args
       if not 'filename' in args:
          return BadRequest('Required param: filename.')
-      if not 'seed' in args:
-         return BadRequest('Required param: seed.')
 
       try:
-         seed = int(args['seed'])
+         seed = args['seed']
          length = int(defaultValue(args, 'length', 500))
          sequential = int(defaultValue(args, 'sequential', 1))
       except:
@@ -36,17 +34,26 @@ class GeneratorService(object):
       filename = args['filename']
       randomLength = 'random_sequential' in args
 
+      # Load SerialIndex with the requested file.
       if self.store.exists(filename + ':src'):
          index = SerialIndex(filename, self.store)
       else:
          # TODO: Automatically generate index if the file is present; else, error.
-         return Response('uh oh, \'' + filename + '\' isn\'t stored!')
+         return Response('Unrecognized file name: \'{0}'.format(filename))
 
+      # Attempt to seed reader with provided seed
       reader = Reader(index)
+      try:
+         reader.seed(self.store.get(seed + ':id'))
+      except ValueError:
+         # Silently default to Reader's default.
+         pass
+
+      # Compose a list of terms.
       generatedList = [reader.previous()]
       for i in range(length):
          generatedList.append(reader.next())
-      return Response(str(generatedList))
+      return Response('\'generated\': ' + str(generatedList))
 
    def get_source(self, request):
       return Response('lol srcin')
@@ -69,9 +76,9 @@ class GeneratorService(object):
    def __init__(self):
       self.url_map = Map([
          Rule('/', endpoint='otherwise'),
-         Rule('/generate', endpoint="text_block"),
-         Rule('/source', endpoint="source"),
-         Rule('/available', endpoint="source_list")
+         Rule('/generate', endpoint='text_block'),
+         Rule('/source', endpoint='source'),
+         Rule('/available', endpoint='source_list')
       ])
       self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
 
@@ -92,4 +99,4 @@ class GeneratorService(object):
          return e
 
    def get_otherwise(self, request):
-      return Response('lol')
+      return Response('api coming soon...for now experiment with /available, /generate, /source')

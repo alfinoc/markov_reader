@@ -58,8 +58,8 @@ class Reader:
    raises ValueError if 'start' is not a known term
    """
    def seed(self, start):
-      if self.index.getTerm.getTerm(start) == None:
-         raise ValueError
+      if self.index.getTerm(start) == None:
+         raise ValueError('No term with ID ' + str(start))
       self.last = start
 
    """
@@ -99,7 +99,7 @@ class SerialIndex:
    the filename is not in the store.
    """
    def __init__(self, filename, store):
-      if store.exists(filename + ':src'):
+      if not store.exists(filename + ':src'):
          raise ValueError(filename + ' not found in store! Remember: use the base name.')
       # TODO: this is a difference between serialindex and index -- one has
       # an intrinsic filename and the other does not
