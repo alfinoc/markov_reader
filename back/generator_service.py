@@ -1,9 +1,13 @@
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, BadRequest
+import redis
+import json
 
 from reader import *
-import redis
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
 
 """
 returns the value in 'dict' for 'key', or 'default' if there is none.
@@ -47,6 +51,18 @@ class GeneratorService(object):
    def get_source(self, request):
       return Response('lol srcin')
 
+   def get_source_list(self, request):
+      nameToFile = {}
+      files = self.store.keys('*:src')
+      for key in files:
+         file = key[:-len(':src')]
+         name = self.store.get(file + ':name')
+         # If there's no descriptive name stored, just use the filename
+         if not name:
+            name = file
+         nameToFile[name] = file
+      return Response('\'sources\': ' + json.dumps(nameToFile))
+
    """
    dispatch requests to appropriate functions above
    """
@@ -54,9 +70,10 @@ class GeneratorService(object):
       self.url_map = Map([
          Rule('/', endpoint='otherwise'),
          Rule('/generate', endpoint="text_block"),
-         Rule('/source', endpoint='source')
+         Rule('/source', endpoint="source"),
+         Rule('/available', endpoint="source_list")
       ])
-      self.store = redis.Redis('localhost', port='6379')
+      self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
 
    def wsgi_app(self, environ, start_response):
       request = Request(environ);

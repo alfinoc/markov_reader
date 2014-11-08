@@ -87,8 +87,6 @@ class Reader:
 def strMapToInt(strMap):
    intMap = {}
    for key in strMap:
-      if key == 'pit' or strMap[key] == 'pit':
-         print 'stop, man!'
       intMap[int(key)] = int(strMap[key])
    return intMap
 
@@ -96,7 +94,13 @@ def strMapToInt(strMap):
 a text index stored in a Redis database, according to scheme laid out in Index.serialize
 """
 class SerialIndex:
+   """
+   filename should be the *base* filename for the source text. raises ValueError if 
+   the filename is not in the store.
+   """
    def __init__(self, filename, store):
+      if store.exists(filename + ':src'):
+         raise ValueError(filename + ' not found in store! Remember: use the base name.')
       # TODO: this is a difference between serialindex and index -- one has
       # an intrinsic filename and the other does not
       self.filename = filename
@@ -127,7 +131,7 @@ class SerialIndex:
 
 # Lexer rules
 terminators = '.?,!:;'
-literals = terminators + '/'
+literals = terminators + '/='
 tokens = (
    'EN_DASH',
    'EM_DASH',
@@ -145,10 +149,18 @@ def t_error(t):
     print "Illegal character '%s'" % t.value[0]
     t.lexer.skip(1)
 
+def getBaseFilename(path):
+   while '/' in path:
+      path = path[(path.index('/')+1):]
+   return path
+
 """
 A pre-parsed version of the source text contained in 'filename'. Each whitespace separated
 unique word in the source is given an ID, and for any given word-id w, a collection of
 words that follow w can be retrived in the form of a frequency distribution.
+
+'filename' should be a path referencing the actual file to open. If serialized, the file's
+key is the base of this filename (see serialize documentation).
 """
 class Index:
    def __init__(self, filename):
@@ -158,7 +170,7 @@ class Index:
       tokenToId = invertedMap(self.dictionary)
       self.sourceText = map(lambda str: tokenToId[str], tokens)
       self.successors = self.__getFrequencyMap(tokens, tokenToId)
-      self.filename = filename
+      self.filename = getBaseFilename(filename)
 
    """
    returns the id of the first token in the source text, or None if there are no tokens.
@@ -185,20 +197,21 @@ class Index:
 
    """
    writes the index to the provided Redis store with the following <k,v> format:
-      filename:src -> list<id>
-      filename:id -> term_string
-      filename:id:succ -> HASH<id, count>
-
       last_term_id
-
       <id> -> term_string
       <term_string>:id -> <id>
       <filename>:src -> list<id>
       <id>:succ -> HASH<filename:<id>, count>
       <id>:positions -> LIST<filename:id>
    with id being the term id for every term stored in the index.
+
+   Uses the *base* filename provided to the Index' constructor as a key. Raises
+   ValueError if the store already has an entry with this filename key.
    """
    def serialize(self, store):
+      if store.exists(self.filename + ':src'):
+         raise ValueError('There is already an index for file: ' + self.filename)
+
       # the canonical id is the word's id in the Redis store, which may be different
       # from the one used internally. getCanonicalId will return the one and only
       # (potentially brand new) ID for the term referenced by the given instanceId.
@@ -230,7 +243,7 @@ class Index:
          counts = store.hgetall(canonKey)
          # TODO/huh!: you might want to retain some file information here, but for now
          # you just go ahead and merge count maps. makes you think: the words themselves
-         # don't really make the text, but rather word pairs, the connective tissue.
+         # don't really make the text, but rather word pairs, the connections.
          for succ in self.successors[keyId]:
             canonSucc = getCanonicalId(succ)
             if not canonSucc in counts:

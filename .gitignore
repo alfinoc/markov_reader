@@ -3,3 +3,4 @@ test.py
 *.pyc
 front/bower_components
 *.rdb
+data/*
