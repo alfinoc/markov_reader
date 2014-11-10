@@ -22,8 +22,8 @@ class GeneratorService(object):
    """
    def get_text_block(self, request):
       args = request.args
-      if not 'filename' in args:
-         return BadRequest('Required param: filename.')
+      if not 'source' in args:
+         return BadRequest('Required param: source.')
 
       try:
          seed = args['seed']
@@ -31,7 +31,7 @@ class GeneratorService(object):
          sequential = int(defaultValue(args, 'sequential', 1))
       except:
          return BadRequest('\'seed\', \'length\', \'sequential\' should all be integers')
-      filename = args['filename']
+      filename = args['source']
       randomLength = 'random_sequential' in args
 
       # Load SerialIndex with the requested file.
@@ -55,9 +55,6 @@ class GeneratorService(object):
          generatedList.append(reader.next())
       return Response('\'generated\': ' + str(generatedList))
 
-   def get_source(self, request):
-      return Response('lol srcin')
-
    def get_source_list(self, request):
       nameToFile = {}
       files = self.store.keys('*:src')
@@ -70,6 +67,18 @@ class GeneratorService(object):
          nameToFile[name] = file
       return Response('\'sources\': ' + json.dumps(nameToFile))
 
+   def get_meta_data(self, request):
+      pass
+
+   def get_source(self, request):
+      if not 'name' in request.args:
+         return BadRequest('Required param: name')
+      filename = request.args['name']
+      if not self.store.exists(filename + ':src'):
+         return BadRequest('Source with \'{0}\' not found'.format(filename))
+
+      # TO-DO: serve a static json file with the source in it
+
    """
    dispatch requests to appropriate functions above
    """
@@ -77,6 +86,7 @@ class GeneratorService(object):
       self.url_map = Map([
          Rule('/', endpoint='otherwise'),
          Rule('/generate', endpoint='text_block'),
+         Rule('/meta', endpoint='meta_data'),
          Rule('/source', endpoint='source'),
          Rule('/available', endpoint='source_list'),
       ])
