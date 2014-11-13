@@ -1,13 +1,10 @@
 from werkzeug.wrappers import Request, Response
 from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, BadRequest
-import redis
 import json
 
+from redis_wrapper import *
 from reader import *
-
-REDIS_HOST = 'localhost'
-REDIS_PORT = '6379'
 
 """
 returns the value in 'dict' for 'key', or 'default' if there is none.
@@ -24,7 +21,6 @@ class GeneratorService(object):
       args = request.args
       if not 'source' in args:
          return BadRequest('Required param: source.')
-
       try:
          seed = args['seed']
          length = int(defaultValue(args, 'length', 500))
@@ -35,36 +31,34 @@ class GeneratorService(object):
       randomLength = 'random_sequential' in args
 
       # Load SerialIndex with the requested file.
-      if self.store.exists(filename + ':src'):
-         index = SerialIndex(filename, self.store)
-      else:
+      if not self.store.isIndexed(filename):
          # TODO: Automatically generate index if the file is present; else, error.
          return Response('Unrecognized file name: \'{0}'.format(filename))
 
-      # Attempt to seed reader with provided seed
+      # Attempt to seed reader with provided seed.
+      index = SerialIndex(filename, self.store)
       reader = Reader(index)
       try:
-         reader.seed(self.store.get(seed + ':id'))
+         reader.seed(self.store.id(seed))
       except ValueError:
-         # Silently default to Reader's default.
+         # Silently default to Reader's good judgement.
          pass
 
       # Compose a list of terms.
       generatedList = [reader.previous()]
       for i in range(length):
          generatedList.append(reader.next())
-      return Response('"generated": ' + str(generatedList))
+      return Response(json.dumps({ 'generated': generatedList }))
 
    def get_source_list(self, request):
       nameToFile = {}
-      files = self.store.keys('*:src')
+      files = self.store.stored()
       for key in files:
-         file = key[:-len(':src')]
-         name = self.store.get(file + ':name')
-         # If there's no descriptive name stored, just use the filename
+         name = self.store.sourceName(key)
+         # If there's no descriptive name stored, just use the filename.
          if not name:
-            name = file
-         nameToFile[name] = file
+            name = key
+         nameToFile[name] = key
       return Response(json.dumps(nameToFile))
 
    def get_meta_data(self, request):
@@ -74,25 +68,21 @@ class GeneratorService(object):
          terms = json.loads(request.args['terms'])['terms']
       except:
          return BadRequest('Malformed JSON term list.')
-      #try:
-      ids = map(lambda t : self.store.get(t + ':id'), terms)
-      print ids
-      resp = {}
-      for i in range(len(ids)):
-         term = terms[i]
-         termId = ids[i]
-         positions = self.store.hgetall(str(termId) + ':positions')
-         resp[term] = { 'positions': positions }
-
-      return Response(json.dumps(resp))
-      #except:
-      #   return BadRequest('Error reading ')
+      try:
+         ids = map(self.store.id, terms)
+         print ids
+         resp = {}
+         for i in range(len(ids)):
+            resp[terms[i]] = { 'positions': self.store.positions(ids[i]) }
+         return Response(json.dumps(resp))
+      except:
+         return BadRequest('Error retrieving term positions.')
 
    def get_source(self, request):
       if not 'name' in request.args:
          return BadRequest('Required param: name')
       filename = request.args['name']
-      if not self.store.exists(filename + ':src'):
+      if not self.store.isIndexed(filename):
          return BadRequest('Source with \'{0}\' not found'.format(filename))
 
       # TO-DO: serve a static json file with the source in it
@@ -108,7 +98,8 @@ class GeneratorService(object):
          Rule('/source', endpoint='source'),
          Rule('/available', endpoint='source_list'),
       ])
-      self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
+      #self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
+      self.store = RedisWrapper()
 
    def wsgi_app(self, environ, start_response):
       request = Request(environ);

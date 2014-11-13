@@ -99,7 +99,7 @@ class SerialIndex:
    the filename is not in the store.
    """
    def __init__(self, filename, store):
-      if not store.exists(filename + ':src'):
+      if not store.isIndexed(filename):
          raise ValueError(filename + ' not found in store! Remember: use the base name.')
       # TODO: this is a difference between serialindex and index -- one has
       # an intrinsic filename and the other does not
@@ -109,7 +109,7 @@ class SerialIndex:
 
    # Index documentation
    def getFirstId(self):
-      return self.store.lindex(self.filename + ':src', 0)
+      return self.store.firstId(self.filename)
 
    # Index documentation
    def getSuccessors(self, termId):
@@ -118,7 +118,7 @@ class SerialIndex:
          return self.successorCache[termId]
 
       # convert Redis HASH (string keys/values) to integer python dict
-      strMap = self.store.hgetall(str(termId) + ':succ')
+      strMap = self.store.successors(termId)
       intMap = strMapToInt(strMap)
 
       # update cache with successor map
@@ -127,7 +127,7 @@ class SerialIndex:
 
    # Index documentation
    def getTerm(self, termId):
-      return self.store.get(termId)
+      return self.store.term(termId)
 
 # Lexer rules
 terminators = '.?,!:;'
