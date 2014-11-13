@@ -202,7 +202,7 @@ class Index:
       <term_string>:id -> <id>
       <filename>:src -> list<id>
       <id>:succ -> HASH<filename:<id>, count>
-      <id>:positions -> LIST<filename:id>
+      <id>:positions -> HASH<filename, list<pos>>
    with id being the term id for every term stored in the index.
 
    Uses the *base* filename provided to the Index' constructor as a key. Raises
@@ -249,7 +249,19 @@ class Index:
             if not canonSucc in counts:
                counts[canonSucc] = 0
             counts[canonSucc] = str(int(counts[canonSucc]) + self.successors[keyId][succ])
+         # TODO: I feel like you should be able to use HSET here or something.
          store.hmset(canonKey, counts)
+
+      # <id>:positions -> HASH<filename, list<id>>
+      positions = {}
+      pos = 0
+      for termId in self.sourceText:
+         if not termId in positions:
+            positions[termId] = []
+         positions[termId].append(pos)
+         pos += 1
+      for termId in positions:
+         store.hset(getCanonicalId(termId) + ':positions', self.filename, positions[termId])
 
    """
    returns the whitespace tokens from the file, making each terminator punctuator its own

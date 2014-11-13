@@ -53,7 +53,7 @@ class GeneratorService(object):
       generatedList = [reader.previous()]
       for i in range(length):
          generatedList.append(reader.next())
-      return Response('\'generated\': ' + str(generatedList))
+      return Response('"generated": ' + str(generatedList))
 
    def get_source_list(self, request):
       nameToFile = {}
@@ -65,10 +65,28 @@ class GeneratorService(object):
          if not name:
             name = file
          nameToFile[name] = file
-      return Response('\'sources\': ' + json.dumps(nameToFile))
+      return Response(json.dumps(nameToFile))
 
    def get_meta_data(self, request):
-      pass
+      if 'terms' not in request.args:
+         return BadRequest('Required param: terms.')
+      try:
+         terms = json.loads(request.args['terms'])['terms']
+      except:
+         return BadRequest('Malformed JSON term list.')
+      #try:
+      ids = map(lambda t : self.store.get(t + ':id'), terms)
+      print ids
+      resp = {}
+      for i in range(len(ids)):
+         term = terms[i]
+         termId = ids[i]
+         positions = self.store.hgetall(str(termId) + ':positions')
+         resp[term] = { 'positions': positions }
+
+      return Response(json.dumps(resp))
+      #except:
+      #   return BadRequest('Error reading ')
 
    def get_source(self, request):
       if not 'name' in request.args:
