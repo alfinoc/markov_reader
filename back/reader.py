@@ -5,6 +5,8 @@ from copy import copy
 import redis
 import ply.lex as lex
 
+import redis
+
 """
 Locate the leftmost value in 'a' exactly equal to 'x'
 """
@@ -209,7 +211,8 @@ class Index:
    ValueError if the store already has an entry with this filename key.
    """
    def serialize(self, store):
-      if store.exists(self.filename + ':src'):
+
+      if store.isIndexed(self.filename):
          raise ValueError('There is already an index for file: ' + self.filename)
 
       # the canonical id is the word's id in the Redis store, which may be different
@@ -220,37 +223,24 @@ class Index:
       def getCanonicalId(instanceId):
          if instanceId in canonMemo:
             return canonMemo[instanceId]
-         canonKey = store.get(self.dictionary[instanceId] + ':id')
+         canonKey = store.id(self.dictionary[instanceId])
          if canonKey == None:
-            canonKey = store.incr('last_term_id')
-            # id -> term_string
-            # term_string:id -> id
-            store.set(canonKey, self.dictionary[instanceId])
-            store.set(self.dictionary[instanceId] + ':id', canonKey)
+            canonKey = store.getNewId()
+            store.setIdTermPair(canonKey, self.dictionary[instanceId])
          canonMemo[instanceId] = str(canonKey)
          return str(canonKey)
 
-      def prefixWithFile(key):
-         return self.filename + ':' + str(key)
-
       # filename:src -> list<id>
-      for keyId in self.sourceText:
-         store.rpush(prefixWithFile('src'), getCanonicalId(keyId))
+      store.setSourceList(self.filename, map(getCanonicalId, self.sourceText))
 
       # id:succ -> HASH<filename:id, count>
-      for keyId in self.successors:
-         canonKey = getCanonicalId(keyId) + ':succ'
-         counts = store.hgetall(canonKey)
-         # TODO/huh!: you might want to retain some file information here, but for now
-         # you just go ahead and merge count maps. makes you think: the words themselves
-         # don't really make the text, but rather word pairs, the connections.
-         for succ in self.successors[keyId]:
-            canonSucc = getCanonicalId(succ)
-            if not canonSucc in counts:
-               counts[canonSucc] = 0
-            counts[canonSucc] = str(int(counts[canonSucc]) + self.successors[keyId][succ])
-         # TODO: I feel like you should be able to use HSET here or something.
-         store.hmset(canonKey, counts)
+      for first in self.successors:
+         canonFirst = getCanonicalId(first)
+         # TODO: retain filename information. right now we're just merging counts.
+         for second in self.successors[first]:
+            canonSecond = getCanonicalId(second)
+            fileCount = self.successors[first][second]
+            store.increaseSuccessorCount(canonFirst, canonSecond, fileCount)
 
       # <id>:positions -> HASH<filename, list<id>>
       positions = {}
@@ -261,7 +251,7 @@ class Index:
          positions[termId].append(pos)
          pos += 1
       for termId in positions:
-         store.hset(getCanonicalId(termId) + ':positions', self.filename, positions[termId])
+         store.setPositionList(getCanonicalId(termId), self.filename, positions[termId])
 
    """
    returns the whitespace tokens from the file, making each terminator punctuator its own

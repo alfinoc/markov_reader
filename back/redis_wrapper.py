@@ -31,7 +31,8 @@ class RedisWrapper:
       return self.store.get(str(id))
 
    def id(self, term):
-      return self.store.get(str(term) + ':id')
+      id = self.store.get(str(term) + ':id')
+      return None if id == None else int(id)
 
    def positions(self, id):
       return self.store.hgetall(str(id) + ':positions')
@@ -40,4 +41,25 @@ class RedisWrapper:
       return self.store.hgetall(str(id) + ':succ')
 
    def getNewId(self):
-      return self.incr('last_term_id')
+      return self.store.incr('last_term_id')
+
+   def setSourceList(self, filename, idList):
+      for id in idList:
+         self.store.rpush(filename + ':src', id)
+
+   def setPositionList(self, filename, id, positions):
+      return self.store.hset(str(id) + ':positions', filename, positions)
+
+   def setIdTermPair(self, id, term):
+      self.store.set(id, term)
+      self.store.set(term + ':id', id)
+
+   def increaseSuccessorCount(self, first, second, amount):
+      key = first + ':succ'
+      field = second
+      prev = self.store.hget(key, field)
+      if prev == None:
+         prev = 0
+      else:
+         prev = int(prev)
+      self.store.hset(key, field, prev + amount)

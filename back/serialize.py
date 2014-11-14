@@ -1,10 +1,7 @@
 import sys
 import os
-import redis
 from reader import *
-
-IP = 'localhost'
-PORT = '6379'
+from redis_wrapper import *
 
 # Check arguments.
 if len(sys.argv) < 2:
@@ -16,9 +13,9 @@ if not os.path.isfile(filename):
 # Attempt indexing.
 print '  indexing \'{0}\''.format(filename)
 try:
-   store = redis.Redis(IP, port=PORT)
+   store = RedisWrapper()
    ind = Index(filename)
    ind.serialize(store)
 except redis.ConnectionError:
-   sys.exit('Error: could not find open Redis server at {0}:{1}'.format(IP, PORT))
+   sys.exit('Error: could not find open Redis server at')
 print '  done'

@@ -118,4 +118,4 @@ class GeneratorService(object):
          return e
 
    def get_otherwise(self, request):
-      return Response('api coming soon...for now experiment with /available, /generate, /source')
+      return Response('api coming soon...')
