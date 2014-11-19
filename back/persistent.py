@@ -3,6 +3,15 @@ import redis
 HOST = 'localhost'
 PORT = '6379'
 
+"""
+Key scheme:
+   last_term_id
+   <id> -> term_string
+   <term_string>:id -> <id>
+   <filename>:src -> list<id>
+   <id>:succ -> HASH<filename:<id>, count>
+   <id>:positions -> HASH<filename, list<pos>>
+"""
 class RedisWrapper:
    def __init__(self):
       try:

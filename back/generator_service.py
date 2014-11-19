@@ -3,8 +3,9 @@ from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, BadRequest
 import json
 
-from persistent import *
-from reader import *
+from persistent import RedisWrapper
+from reader import Reader
+from index import SerialIndex
 
 """
 returns the value in 'dict' for 'key', or 'default' if there is none.

@@ -1,6 +1,6 @@
 import sys
 import os
-from reader import *
+from index import *
 from persistent import *
 
 # Check arguments.
