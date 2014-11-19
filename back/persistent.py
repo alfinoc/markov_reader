@@ -5,7 +5,10 @@ PORT = '6379'
 
 class RedisWrapper:
    def __init__(self):
-      self.store = redis.Redis(HOST, port=PORT)
+      try:
+         self.store = redis.Redis(HOST, port=PORT)
+      except redis.ConnectionError:
+         raise IOError
 
    def stored(self):
       return map(lambda s : s[:-len(':src')], self.store.keys('*:src'))

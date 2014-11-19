@@ -1,6 +1,5 @@
 from bisect import bisect_left
 from random import uniform
-from collections import OrderedDict
 from copy import copy
 import redis
 import ply.lex as lex
@@ -127,11 +126,13 @@ class SerialIndex:
 terminators = '.?,!:;'
 literals = terminators + '/='
 tokens = (
+   'AMP',
    'EN_DASH',
    'EM_DASH',
    'ELLIPSIS',
    'WORD',
 )
+t_AMP      = r'&'
 t_EN_DASH  = r'--'
 t_EM_DASH  = r'---'
 t_ELLIPSIS = r'\.\.\.'
@@ -203,7 +204,6 @@ class Index:
    ValueError if the store already has an entry with this filename key.
    """
    def serialize(self, store):
-
       if store.isIndexed(self.filename):
          raise ValueError('There is already an index for file: ' + self.filename)
 
@@ -253,7 +253,7 @@ class Index:
       lexer = lex.lex()
       tokenized = []
       for line in file:
-         lexer.input(line)
+         lexer.input(line.lower())
          while True:
            tok = lexer.token()
            if not tok: break

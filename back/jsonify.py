@@ -13,7 +13,7 @@ key = sys.argv[1]
 out = sys.argv[2]
 
 # Attempt indexing.
-print '  building json for \'{0}\''.format(out)
+print '  writing json to \'{0}\''.format(out)
 try:
    store = redis.Redis(IP, PORT)
    key = key + ':src'

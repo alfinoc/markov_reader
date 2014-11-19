@@ -5,3 +5,4 @@ front/bower_components
 *.rdb
 data/*
 back/profile*
+*.json

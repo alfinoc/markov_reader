@@ -3,7 +3,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.exceptions import HTTPException, BadRequest
 import json
 
-from redis_wrapper import *
+from persistent import *
 from reader import *
 
 """
@@ -78,13 +78,6 @@ class GeneratorService(object):
       except:
          return BadRequest('Error retrieving term positions.')
 
-   def get_source(self, request):
-      if not 'name' in request.args:
-         return BadRequest('Required param: name')
-      filename = request.args['name']
-      if not self.store.isIndexed(filename):
-         return BadRequest('Source with \'{0}\' not found'.format(filename))
-
       # TO-DO: serve a static json file with the source in it
 
    """
@@ -94,11 +87,9 @@ class GeneratorService(object):
       self.url_map = Map([
          Rule('/generate', endpoint='text_block'),
          Rule('/meta', endpoint='meta_data'),
-         Rule('/source', endpoint='source'),
          Rule('/available', endpoint='source_list'),
          Rule('/', endpoint='otherwise'),
       ])
-      #self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
       self.store = RedisWrapper()
 
    def wsgi_app(self, environ, start_response):
