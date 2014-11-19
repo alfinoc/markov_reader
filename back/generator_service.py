@@ -92,11 +92,11 @@ class GeneratorService(object):
    """
    def __init__(self):
       self.url_map = Map([
-         Rule('/', endpoint='otherwise'),
          Rule('/generate', endpoint='text_block'),
          Rule('/meta', endpoint='meta_data'),
          Rule('/source', endpoint='source'),
          Rule('/available', endpoint='source_list'),
+         Rule('/', endpoint='otherwise'),
       ])
       #self.store = redis.Redis(REDIS_HOST, port=REDIS_PORT)
       self.store = RedisWrapper()

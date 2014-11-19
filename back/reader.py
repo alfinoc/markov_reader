@@ -70,21 +70,13 @@ class Reader:
    """
    def __sample(self, distribution):
       total = sum(distribution.values()) * 1.0
+      roll = uniform(0, total)
 
-      # invert map to <frequency boundary -> choice>
-      sumProb = 0
-      probabilityThresholds = OrderedDict()
+      thusFar = 0
       for choice in distribution:
-         sumProb += distribution[choice] / total
-         probabilityThresholds[sumProb] = choice
-
-      # make a weighted random choice
-      roll = uniform(0, 1)
-      for prob in probabilityThresholds:
-         if prob >= roll:
-            return probabilityThresholds[prob]
-
-      raise ValueError
+         thusFar += distribution[choice]
+         if thusFar >= roll:
+            return choice
 
 def strMapToInt(strMap):
    intMap = {}
