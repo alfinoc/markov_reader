@@ -4,7 +4,7 @@ from werkzeug.exceptions import HTTPException, BadRequest
 import json
 
 from persistent import RedisWrapper
-from reader import Reader
+from reader import MultiReader, generateBlock
 from index import SerialIndex
 
 """
@@ -20,36 +20,38 @@ class GeneratorService(object):
    """
    def get_text_block(self, request):
       args = request.args
-      if not 'source' in args:
-         return BadRequest('Required param: source.')
       try:
-         seed = args['seed']
+         seed = defaultValue(args, 'seed', '')
          length = int(defaultValue(args, 'length', 500))
          sequential = int(defaultValue(args, 'sequential', 1))
       except:
-         return BadRequest('\'seed\', \'length\', \'sequential\' should all be integers')
-      filename = args['source']
-      randomLength = 'random_sequential' in args
+         return BadRequest('\'seed\', \'length\', \'sequential\' should all be integers.')
+      
+      if not 'sources' in args:
+         return BadRequest('Required param: sources.')
+      try:
+         sources = json.loads(request.args['sources'])['sources']
+      except:
+         return BadRequest('Malformed JSON term list.')
 
-      # Load SerialIndex with the requested file.
-      if not self.store.isIndexed(filename):
-         # TODO: Automatically generate index if the file is present; else, error.
-         return Response('Unrecognized file name: \'{0}'.format(filename))
+      # Load SerialIndex for each requested file.
+      for srcKey in sources:
+         if not self.store.isIndexed(srcKey):
+            # TODO: Automatically generate index if the file is present; else, error.
+            return BadRequest('Unrecognized file name: \'{0}'.format(srcKey))
 
       # Attempt to seed reader with provided seed.
-      index = SerialIndex(filename, self.store)
-      reader = Reader(index)
+      indices = map(lambda srcKey : SerialIndex(srcKey, self.store), sources)
+      reader = MultiReader(indices)
       try:
          reader.seed(self.store.id(seed))
       except ValueError:
-         # Silently default to Reader's good judgement.
+         # Silently default to the Reader's good judgement. This usually means using
+         # to the first term in the source text if the seed can't be found.
          pass
 
-      # Compose a list of terms.
-      generatedList = [reader.previous()]
-      for i in range(length):
-         generatedList.append(reader.next())
-      return Response(json.dumps({ 'generated': generatedList }))
+      block = generateBlock(seed, length, sequential, reader, self.store)
+      return Response(json.dumps({ 'generated': block }))
 
    def get_source_list(self, request):
       nameToFile = {}
@@ -71,15 +73,12 @@ class GeneratorService(object):
          return BadRequest('Malformed JSON term list.')
       try:
          ids = map(self.store.id, terms)
-         print ids
          resp = {}
          for i in range(len(ids)):
             resp[terms[i]] = { 'positions': self.store.positions(ids[i]) }
          return Response(json.dumps(resp))
       except:
          return BadRequest('Error retrieving term positions.')
-
-      # TO-DO: serve a static json file with the source in it
 
    """
    dispatch requests to appropriate functions above

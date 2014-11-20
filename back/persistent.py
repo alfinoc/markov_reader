@@ -36,6 +36,9 @@ class RedisWrapper:
          end = self.sourceLength(key)
       return self.store.lrange(key + 'src', start, end)
 
+   def sourceAtPosition(self, key, index):
+      return self.store.lindex(key + ':src', index)
+
    def firstId(self, sourceKey):
       return self.store.lindex(sourceKey + ':src', 0)
 
@@ -46,8 +49,8 @@ class RedisWrapper:
       id = self.store.get(str(term) + ':id')
       return None if id == None else int(id)
 
-   def positions(self, id):
-      return self.store.hgetall(str(id) + ':positions')
+   def positions(self, id, sourceKey):
+      return self.store.hget(str(id) + ':positions', sourceKey)
 
    def successors(self, id, sourceKey):
       return self.store.hgetall('{0}:{1}:succ'.format(id, sourceKey))
@@ -59,7 +62,7 @@ class RedisWrapper:
       for id in idList:
          self.store.rpush(filename + ':src', id)
 
-   def setPositionList(self, filename, id, positions):
+   def setPositionList(self, id, filename, positions):
       return self.store.hset(str(id) + ':positions', filename, positions)
 
    def setIdTermPair(self, id, term):

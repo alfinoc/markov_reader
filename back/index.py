@@ -27,7 +27,7 @@ def index(a, x):
 
 # Error handling rule.
 def t_error(t):
-    print "Illegal character '%s'" % t.value[0]
+    print "  Illegal character '%s'" % t.value[0]
     t.lexer.skip(1)
 
 # Returns the part of 'path' after the last '/' character in 'path'.
@@ -156,10 +156,10 @@ class Index:
          canonMemo[instanceId] = str(canonKey)
          return str(canonKey)
 
-      # filename:src -> list<id>
+      # store source term list
       store.setSourceList(self.filename, map(getCanonicalId, self.sourceText))
 
-      # id:succ -> HASH<filename:id, count>
+      # store successors
       for first in self.successors:
          canonFirst = getCanonicalId(first)
          for second in self.successors[first]:
@@ -167,7 +167,7 @@ class Index:
             fileCount = self.successors[first][second]
             store.setSuccessorCount(self.filename, canonFirst, canonSecond, fileCount)
 
-      # <id>:positions -> HASH<filename, list<id>>
+      # store positions
       positions = {}
       pos = 0
       for termId in self.sourceText:

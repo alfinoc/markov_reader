@@ -1,4 +1,5 @@
-from random import uniform
+from json import loads
+from random import uniform, choice
 
 """
 A scanner for reading from a source text Index.
@@ -18,14 +19,14 @@ class Reader:
    """
    def next(self):
       self.last = self.__sample(self.index.getSuccessors(self.last))
-      return self.index.getTerm(self.last)
+      return self.last
 
    """
    returns the last value returned from next, or, if next has not been called, returns
    the initial seed
    """
    def previous(self):
-      return self.index.getTerm(self.last)
+      return self.last
 
    """
    seeds the reader with a starting phrase 'start'
@@ -62,27 +63,28 @@ class MultiReader:
    builds a scanner around all of the provided Index objects. initially, calls to next()
    will read from the first Index in the provided list.
    """
-   def __init__(self, **indices):
+   def __init__(self, indices):
       if len(indices) == 0:
          raise ValueError('provide at least one Index')
       self.readers = map(Reader, indices)
+      self.sourceKeys = map(lambda i : i.getSourceKey(), indices)
       self.current = 0
       # We need to store last again here since the client could switch the index any
       # number of times between calls to next and previous.
-      self.lastTerm = self.getCurrentIndex().previous()
+      self.last = self.__getCurrentReader().previous()
 
    """
    returns the next term from the current Index (see Reader doc)
    """
-   def randNext(self):
-      self.lastTerm = self.getCurrentIndex().next()
-      return self.lastTerm
+   def next(self):
+      self.last = self.__getCurrentReader().next()
+      return self.last
 
    """
    returns the last term returned by next() (see Reader doc)
    """
    def previous(self):
-      return self.lastTerm
+      return self.last
 
    """
    seeds the reader with a starting phrase 'start' (see Reader doc). if the seed is not
@@ -92,10 +94,10 @@ class MultiReader:
    def seed(self, start):
       for i in range(len(self.readers)):
          try:
-            self.getCurrentIndex().seed(start)
+            self.__getCurrentReader().seed(start)
             return
-         except:
-            self.__progressCurrentIndex()
+         except ValueError:
+            self.__progressCurrentReader()
       raise ValueError('No term with ID {0} in any of the indices.'.format(start))
 
    """
@@ -105,18 +107,57 @@ class MultiReader:
    round robin with respect to the order provided to the constructor.
    """
    def switchIndex(self):
-      __progressCurrentIndex()
-      self.seed(self.lastTerm)
+      self.__progressCurrentReader()
+      self.seed(self.last)
 
    """
-   returns the Index object which is currently being read
+   returns the source key of the Index currently being read
    """
-   def getCurrentIndex(self):
+   def getCurrentSourceKey(self):
+      return self.sourceKeys[self.current]
+
+   """
+   returns the Reader currently reading
+   """
+   def __getCurrentReader(self):
       return self.readers[self.current]
 
    """
    progresses the current Index index (lol) one more, mod the number of indices
    """
-   def __progressCurrentIndex(self):
+   def __progressCurrentReader(self):
       self.current += 1
       self.current %= len(self.readers)
+
+"""
+builds a list of terms based on the provided request parameters:
+   seed: The first term in the returned list. Must be a term recognized by the
+         provided reader.
+   length: The length of the returned list. Any integer.
+   sequential: The minimum length of a sequence read directly from a text. Any
+         integer.
+using the provided MultiReader 'reader' and the persistent 'store'
+"""
+def generateBlock(seed, length, sequential, reader, store):
+   sequential = 5
+   # Compose a list of generated terms.
+   seed = reader.previous()
+   generatedList = [seed]
+   pos = 0
+   for i in range(1, length + 1):
+      if i % sequential == 0:
+         # attempt a jump!
+         reader.switchIndex()
+         generatedList.append(reader.next())
+         # avoid the position lookups if we're jumping on every term
+         if sequential > 1:
+            lastId = generatedList[len(generatedList) - 1]
+            srcKey = reader.getCurrentSourceKey()
+            pos = choice(loads(store.positions(lastId, srcKey)))
+      else:
+         # read the next term sequentially
+         sourceKey = reader.getCurrentSourceKey()
+         pos += 1
+         pos %= store.sourceLength(sourceKey)
+         generatedList.append(store.sourceAtPosition(sourceKey, pos))
+   return map(store.term, generatedList)
