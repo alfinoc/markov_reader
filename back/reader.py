@@ -51,3 +51,72 @@ class Reader:
          thusFar += distribution[choice]
          if thusFar >= roll:
             return choice
+
+"""
+A scanner for reading simultaneously from multiple Index objects. At any given time, the
+MultiReader is "reading" one Index in the sense that calls to next() return successors
+in that Index.
+"""
+class MultiReader:
+   """
+   builds a scanner around all of the provided Index objects. initially, calls to next()
+   will read from the first Index in the provided list.
+   """
+   def __init__(self, **indices):
+      if len(indices) == 0:
+         raise ValueError('provide at least one Index')
+      self.readers = map(Reader, indices)
+      self.current = 0
+      # We need to store last again here since the client could switch the index any
+      # number of times between calls to next and previous.
+      self.lastTerm = self.getCurrentIndex().previous()
+
+   """
+   returns the next term from the current Index (see Reader doc)
+   """
+   def randNext(self):
+      self.lastTerm = self.getCurrentIndex().next()
+      return self.lastTerm
+
+   """
+   returns the last term returned by next() (see Reader doc)
+   """
+   def previous(self):
+      return self.lastTerm
+
+   """
+   seeds the reader with a starting phrase 'start' (see Reader doc). if the seed is not
+   a known term in the current index, switches the index to the first
+   raises ValueError if 'start' is not a known term in *any* stored Index.
+   """
+   def seed(self, start):
+      for i in range(len(self.readers)):
+         try:
+            self.getCurrentIndex().seed(start)
+            return
+         except:
+            self.__progressCurrentIndex()
+      raise ValueError('No term with ID {0} in any of the indices.'.format(start))
+
+   """
+   attempts to switch the current Index to another, seeding the new current Index with
+   the previous term. if no other Index can be seeded this way, does not change the
+   current Index. consecutive calls to switchIndex will cycle through the indices
+   round robin with respect to the order provided to the constructor.
+   """
+   def switchIndex(self):
+      __progressCurrentIndex()
+      self.seed(self.lastTerm)
+
+   """
+   returns the Index object which is currently being read
+   """
+   def getCurrentIndex(self):
+      return self.readers[self.current]
+
+   """
+   progresses the current Index index (lol) one more, mod the number of indices
+   """
+   def __progressCurrentIndex(self):
+      self.current += 1
+      self.current %= len(self.readers)

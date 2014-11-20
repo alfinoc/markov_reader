@@ -53,25 +53,22 @@ def invertedMap(list):
    return res
 
 """
-a text index stored in a peristent store, according to scheme laid out in Index.serialize
+a text Index backed by a peristent store, according to scheme laid out in persistent.py
 """
 class SerialIndex:
    """
-   filename should be the *base* filename for the source text. raises ValueError if 
-   the filename is not in the store.
+   'sourceKey' is the key for the source text in the provided persistent 'store'
    """
-   def __init__(self, filename, store):
-      if not store.isIndexed(filename):
-         raise ValueError(filename + ' not found in store! Remember: use the base name.')
-      # TODO: this is a difference between serialindex and index -- one has
-      # an intrinsic filename and the other does not
-      self.filename = filename
+   def __init__(self, sourceKey, store):
+      if not store.isIndexed(sourceKey):
+         raise ValueError(sourceKey + ' not found in store! Remember: use the base name.')
+      self.sourceKey = sourceKey
       self.store = store
       self.successorCache = {}
 
    # Index documentation
    def getFirstId(self):
-      return self.store.firstId(self.filename)
+      return self.store.firstId(self.sourceKey)
 
    # Index documentation
    def getSuccessors(self, termId):
@@ -80,7 +77,7 @@ class SerialIndex:
          return self.successorCache[termId]
 
       # convert Redis HASH (string keys/values) to integer python dict
-      strMap = self.store.successors(termId, self.filename)
+      strMap = self.store.successors(termId, self.sourceKey)
       intMap = strMapToInt(strMap)
 
       # update cache with successor map
@@ -91,13 +88,17 @@ class SerialIndex:
    def getTerm(self, termId):
       return self.store.term(termId)
 
+   # Index documentation
+   def getSourceKey(self):
+      return self.sourceKey
+
 """
 A pre-parsed version of the source text contained in 'filename'. Each whitespace separated
 unique word in the source is given an ID, and for any given word-id w, a collection of
 words that follow w can be retrived in the form of a frequency distribution.
 
-'filename' should be a path referencing the actual file to open. If serialized, the file's
-key is the base of this filename (see serialize documentation).
+'filename' should be a path referencing the actual file to open. If serialized, the new
+source's key is the base of this filename.
 """
 class Index:
    def __init__(self, filename):
@@ -176,6 +177,12 @@ class Index:
          pos += 1
       for termId in positions:
          store.setPositionList(getCanonicalId(termId), self.filename, positions[termId])
+
+   """
+   returns the source key used in serialization of the Index (see persistent.py docs).
+   """
+   def getSourceKey(self):
+      return self.filename
 
    """
    returns the whitespace tokens from the file, making each terminator punctuator its own
