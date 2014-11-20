@@ -1,6 +1,5 @@
 body {
-   font-family: 'Avenir Next', 'Inconsolata';
-   font-weight: lighter
+   font-family: 'Avenir Next', 'Roboto', 'Roboto_Backup', 'Inconsolata', 'Inconsolata_Backup', monospace;
    padding: 0px;
    margin: 0px;
 }
@@ -17,4 +16,16 @@ body {
 
 textarea, input {
    font-family: inherit;
+}
+
+@font-face {
+   font-family: "Gill_Sans";
+   src: url(images/Gill_Sans_Light.ttf);
+   font-style: normal;
+}
+
+@font-face {
+   font-family: "Gill_Sans";
+   src: url(images/Gill_Sans_Light_Italic.ttf);
+   font-style: italic;
 }

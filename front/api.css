@@ -1,105 +1,106 @@
 #wrapper {
-   width: 700px;
-   margin: auto;
-   padding-top: 5%;
-}
-
-end-point {
-   display: block;
-   background-color: rgb(50, 50, 50);
-   margin-bottom: 20px;
-   border-radius: 5px;
-}
-
-pre {
-   font-family: inherit;
-   font-size: inherit;
-   margin: 0px;
-   padding: 0px;
-   display: inline-block;
-   text-align: left;
-}
-
-end-point > * {
-   padding: 20px;
-   overflow: hidden;
-}
-
-end-point > *:not(:last-child) {
-   border-bottom: 3px solid rgb(29, 29, 29);
-}
-
-type, parameter, indent {
-   display: inline-block;
-}
-
-placeholder {
-   font-style: italic;
-   color: #CDEE69;
-}
-
-format, url {
-   font-family: Inconsolata;
-}
-
-indent {
-   width: 2em;
-}
-
-url > base-url {
-   font-size: x-large;
-   color: white;
-   padding-left: 0.2em;
-}
-
-url {
-   text-align: center;
-   background-color: rgb(29, 29, 29);
-}
-
-url, description, format {
-   display: block;
-}
-
-format {
-   margin: auto;
-   display: block;
-   padding: 20px 10px 0px 10px !important;
-   text-align: center;
+  margin: auto;
+  padding-top: 5%;
+  width: 700px;
 }
 
 description {
-   padding-left: 20px;
+  font-weight: lighter;
+  padding-left: 20px;
 }
 
-h1 {
-   font-weight: normal;
-   font-size: x-large;;
-   text-transform: uppercase;
-   margin: 0px;
+description, format, url {
+  display: block;
 }
 
-type {
-   font-size: smaller;
-   font-style: italic;
-   padding-left: 0.5em;
-   color: rgb(150, 150, 150)
+end-point {
+  background-color: rgb(50, 50, 50);
+  border-radius: 5px;
+  display: block;
+  margin-bottom: 20px;
 }
 
-ul {
-   list-style: none;
-   margin: 0px;
+end-point > * {
+  overflow: hidden;
+  padding: 20px;
 }
 
-parameter {
-   color: #9CD9F0;
+end-point > *:not(:last-child) {
+  border-bottom: 3px solid rgb(29, 29, 29);
 }
 
 end-point > div > *:not(:first-child) {
-   padding-top: 10px;
-   padding-left: 40px;
+  padding-left: 40px;
+  padding-top: 10px;
 }
 
-parameter, li:not(:last-child) {
-   margin-bottom: 3px;
+format {
+  display: block;
+  margin: auto;
+  padding: 20px 10px 0px 10px !important;
+  text-align: center;
+}
+
+format, url {
+  font-family: Inconsolata;
+}
+
+h1 {
+  font-size: x-large;;
+  font-weight: normal;
+  margin: 0px;
+  text-transform: uppercase;
+}
+
+indent {
+  width: 2em;
+}
+
+indent, parameter, type {
+  display: inline-block;
+}
+
+li:not(:last-child), parameter {
+  margin-bottom: 3px;
+}
+
+parameter {
+  color: #9CD9F0;
+}
+
+placeholder {
+  color: #CDEE69;
+  font-style: italic;
+}
+
+pre {
+  display: inline-block;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0px;
+  padding: 0px;
+  text-align: left;
+}
+
+type {
+  color: rgb(150, 150, 150);
+  font-size: smaller;
+  font-style: italic;
+  padding-left: 0.5em;
+}
+
+ul {
+  list-style: none;
+  margin: 0px;
+}
+
+url {
+  background-color: rgb(29, 29, 29);
+  text-align: center;
+}
+
+url > base-url {
+  color: white;
+  font-size: x-large;
+  padding-left: 0.2em;
 }
