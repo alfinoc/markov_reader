@@ -80,7 +80,7 @@ class SerialIndex:
          return self.successorCache[termId]
 
       # convert Redis HASH (string keys/values) to integer python dict
-      strMap = self.store.successors(termId)
+      strMap = self.store.successors(termId, self.filename)
       intMap = strMapToInt(strMap)
 
       # update cache with successor map
@@ -161,11 +161,10 @@ class Index:
       # id:succ -> HASH<filename:id, count>
       for first in self.successors:
          canonFirst = getCanonicalId(first)
-         # TODO: retain filename information. right now we're just merging counts.
          for second in self.successors[first]:
             canonSecond = getCanonicalId(second)
             fileCount = self.successors[first][second]
-            store.increaseSuccessorCount(canonFirst, canonSecond, fileCount)
+            store.setSuccessorCount(self.filename, canonFirst, canonSecond, fileCount)
 
       # <id>:positions -> HASH<filename, list<id>>
       positions = {}
