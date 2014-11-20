@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>markov</title>
+   <link rel="stylesheet" type="text/css" href="api.css">
+   <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body class="dark"><div id="wrapper">
+   <end-point>
+      <url>bud.haus/~chris/markov/<base-url>generate</base-url></url>
+      <div>
+         <h1>Parameters<type>GET</type></h1>
+         <ul>
+            <li>
+               <parameter>sources</parameter>
+               <type>list(string) required</type>
+               <description>The string keys of the source texts from which to read.</description>
+            </li>
+            <li>
+               <parameter>seed</parameter>
+               <type>string</type>
+               <description>The first term in the generated text. Defaults to the first term in the source referenced.</description>
+            </li>
+            <li>
+               <parameter>length</parameter>
+               <type>integer default=500</type>
+               <description>The number of tokens in the generated text.</description>
+            </li>
+            <li>
+               <parameter>sequential</parameter>
+               <type>integer default=1</type>
+               <description>The minimum number of consecutive terms to take from a single source text before jumping, either to another position in the current source text or to another source text entirely. We say <em>minimum</em> because it is possible that after progressing through 'sequential' terms from one text, there is no available jump (the last generated term appears once in all the source texts). In this case, we continue sequentially until a jump is possible.</description>
+            </li>
+         </ul>
+      </div>
+      <div>
+         <h1>Response<type>JSON</type></h1>
+         <description>A sequence of terms generated according to provided parameters. Every consecutive pair of terms in the generated list appears as a pair in some source text, and if a pair appears more often in the source text, it is more likely to appear in the generated term list.</description>
+         <format><pre>
+{
+   "generated": [
+      <placeholder>term</placeholder><type>(string)</type>,
+      ...
+   ]
+}
+         </pre></format>
+      </div>
+   </end-point>
+   <end-point>
+      <url>bud.haus/~chris/markov/<base-url>available</base-url></url>
+      <div>
+         <h1>Response<type>JSON</type></h1>
+         <description>A map from source text display name to unique source key, where each entry is an available source from which to generate text.</description>
+         <format><pre>
+{
+   <placeholder>display name</placeholder>: <placeholder>source key</placeholder><type>(string)</type>,
+}
+         </pre></format>
+      </div>
+   </end-point>
+   <end-point>
+      <url>bud.haus/~chris/markov/<base-url>meta</base-url></url>
+      <div>
+         <h1>Parameters<type>POST</type></h1>
+         
+         <ul>
+            <li>
+               <parameter>terms</parameter>
+               <description>A list of terms for which to receive metadata.</description>
+               <format><pre>
+{
+   "terms": [
+      <placeholder>term</placeholder><type>(string)</type>,
+      ...
+   ]
+}
+               </pre></format>
+            </li>
+         </ul>
+      </div>
+      <div>
+         <h1>Response<type>JSON</type></h1>
+         <description>A map from string term to a dictionary of data about that term.</description>
+         <format><pre>
+{
+   "positions": {
+      <placeholder>source key</placeholder>: [
+         <placeholder>position</placeholder><type>(integer)</type>,
+         ...
+      ],
+      ...
+   }
+}
+         </pre></format>
+      </div>
+   </end-point>
+   <end-point>
+      <url>bud.haus/~chris/markov/<base-url>source/<placeholder>source_key</placeholder>.json</base-url></url>
+      <div>
+         <h1>Response<type>JSON</type></h1>
+         <description>A list of arbitrary integer IDs that are keys to the provided term map, which allows translation to human readable string. This list is the original sequence of terms in the source text.</description>
+         <format><pre>
+{
+   "sequence": [
+      <placeholder>id</placeholder><type>(integer)</type>,
+      ...
+   ],
+
+   "term": {
+      <placeholder>id</placeholder>: <placeholder>term</placeholder><type>(string)</type>,
+      ...
+   }
+}
+         </pre></format>
+      </div>
+   </end-point>
+</div></body>
+</html>

@@ -1,0 +1,105 @@
+#wrapper {
+   width: 700px;
+   margin: auto;
+   padding-top: 5%;
+}
+
+end-point {
+   display: block;
+   background-color: rgb(50, 50, 50);
+   margin-bottom: 20px;
+   border-radius: 5px;
+}
+
+pre {
+   font-family: inherit;
+   font-size: inherit;
+   margin: 0px;
+   padding: 0px;
+   display: inline-block;
+   text-align: left;
+}
+
+end-point > * {
+   padding: 20px;
+   overflow: hidden;
+}
+
+end-point > *:not(:last-child) {
+   border-bottom: 3px solid rgb(29, 29, 29);
+}
+
+type, parameter, indent {
+   display: inline-block;
+}
+
+placeholder {
+   font-style: italic;
+   color: #CDEE69;
+}
+
+format, url {
+   font-family: Inconsolata;
+}
+
+indent {
+   width: 2em;
+}
+
+url > base-url {
+   font-size: x-large;
+   color: white;
+   padding-left: 0.2em;
+}
+
+url {
+   text-align: center;
+   background-color: rgb(29, 29, 29);
+}
+
+url, description, format {
+   display: block;
+}
+
+format {
+   margin: auto;
+   display: block;
+   padding: 20px 10px 0px 10px !important;
+   text-align: center;
+}
+
+description {
+   padding-left: 20px;
+}
+
+h1 {
+   font-weight: normal;
+   font-size: x-large;;
+   text-transform: uppercase;
+   margin: 0px;
+}
+
+type {
+   font-size: smaller;
+   font-style: italic;
+   padding-left: 0.5em;
+   color: rgb(150, 150, 150)
+}
+
+ul {
+   list-style: none;
+   margin: 0px;
+}
+
+parameter {
+   color: #9CD9F0;
+}
+
+end-point > div > *:not(:first-child) {
+   padding-top: 10px;
+   padding-left: 40px;
+}
+
+parameter, li:not(:last-child) {
+   margin-bottom: 3px;
+}
