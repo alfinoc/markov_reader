@@ -85,8 +85,8 @@ class SerialIndex:
       return intMap
 
    # Index documentation
-   def getTerm(self, termId):
-      return self.store.term(termId)
+   def isLegalSeed(self, termId):
+      return len(self.store.successors(termId, self.sourceKey).keys()) != 0
 
    # Index documentation
    def getSourceKey(self):
@@ -122,15 +122,6 @@ class Index:
    """
    def getSuccessors(self, termId):
       return self.successors[termId]
-
-   """
-   returns the string term with the given ID
-   """
-   def getTerm(self, termId):
-      if 0 <= termId and termId < len(self.dictionary):
-         return self.dictionary[termId]
-      else:
-         return None
 
    """
    Writes the index to the provided persistent store. Uses the *base* filename provided

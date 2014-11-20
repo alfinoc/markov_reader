@@ -32,11 +32,12 @@ class Reader:
    seeds the reader with a starting phrase 'start'
    after a call to seed(start), subsequent next() calls will behave as if the previous
    call to next() returned start
-   raises ValueError if 'start' is not a known term
+   raises ValueError if 'start' is not a known term, or 'start' has no successors within
+   this Reader's source
    """
    def seed(self, start):
-      if self.index.getTerm(start) == None:
-         raise ValueError('No term with ID ' + str(start))
+      if not self.index.isLegalSeed(start):
+         raise ValueError('Term ID {0} has no successors.'.format(start))
       self.last = start
 
    """
@@ -139,7 +140,6 @@ builds a list of terms based on the provided request parameters:
 using the provided MultiReader 'reader' and the persistent 'store'
 """
 def generateBlock(seed, length, sequential, reader, store):
-   sequential = 5
    # Compose a list of generated terms.
    seed = reader.previous()
    generatedList = [seed]
