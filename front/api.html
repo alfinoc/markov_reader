@@ -2,7 +2,7 @@
 <html>
 <head>
    <title>markov</title>
-   <link rel="stylesheet" type="text/css" href="api_out.css">
+   <link rel="stylesheet" type="text/css" href="api.css">
    <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body class="dark"><div id="wrapper">
@@ -13,12 +13,12 @@
          <ul>
             <li>
                <parameter>sources</parameter>
-               <type>list(string) required</type>
+               <type>string list (comma-separated) required</type>
                <description>The string keys of the source texts from which to read.</description>
             </li>
             <li>
                <parameter>seed</parameter>
-               <type>string</type>
+               <type>string default=random</type>
                <description>The first term in the generated text. Defaults to the first term in the source referenced.</description>
             </li>
             <li>
@@ -65,7 +65,7 @@
          
          <ul>
             <li>
-               <parameter>terms</parameter>
+               <parameter>terms<type>string list (comma-separated) required</type></parameter>
                <description>A list of terms for which to receive metadata.</description>
                <format><pre>
 {
@@ -98,7 +98,7 @@
       <url>bud.haus/~chris/markov/<base-url>source/<placeholder>source_key</placeholder>.json</base-url></url>
       <div>
          <h1>Response<type>JSON</type></h1>
-         <description>A list of arbitrary integer IDs that are keys to the provided term map, which allows translation to human readable string. This list is the original sequence of terms in the source text.</description>
+         <description>A list of arbitrary integer IDs that are keys to the provided term map, which allows for translation to human readable string. This list is the original sequence of terms in the source text.</description>
          <format><pre>
 {
    "sequence": [

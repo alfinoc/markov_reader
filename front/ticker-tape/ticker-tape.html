@@ -12,57 +12,65 @@
 Polymer('ticker-tape', {
    created: function() {
       this.bufferPixels = 100;
-      this.pixelsPerSecond = 20;
+      this.lastLineHeight = 0;
    },
 
    domReady: function() {
-      /*
-      this.$.text.style.top = this.clientHeight + 'px';   
-      setInterval(this.scrollUpOnePixel.bind(this), 1000 / this.pixelsPerSecond);
       this.sources = this.querySelectorAll('text-source').array();
- */
-   
-      // Debug fixed line.
-      this.sources = this.querySelectorAll('text-source').array();
-      this.$.text.style.top = '100px';
-      this.spawnLine();
-      this.spawnLine();
-      this.spawnLine();
-      this.spawnLine();
-      this.spawnLine();
-      this.spawnLine();
+      this.$.text.style.top = this.clientHeight + 'px';
+      this.refreshBuffer();
+      setInterval(this.scrollUpOneLine.bind(this), 5000);
    },
 
-   scrollUpOnePixel: function() {
+   pause: function() {
+      this.paused = true;
+   },
+
+   play: function() {
+      this.paused = false;
+   },
+
+   refreshBuffer: function() {
+      this.pause();
+      this.garbageCollectLines();
+      for (var i = 0; i < 10; i++)
+         this.loadNewLine();
+      this.play();
+   },
+
+   loadNewLine: function() {
+      var newLine = this.getNextLine();
+      this.$.text.appendChild(newLine);
+      this.lastLineHeight = newLine.clientHeight;
+   },
+
+   scrollUpOneLine: function() {
+      if (!this.paused) {
+         this.async(function() {
+            var textStyle = this.$.text.style;
+            textStyle.top = parseInt(textStyle.top) - this.lastLineHeight + 'px';
+         });
+      }
+   },
+
+   garbageCollectLines: function() {
+      this.$.text.classList.add('suspendtransition');
       var lines = this.$.text.children;
       var textStyle = this.$.text.style;
-      // Raise text block by a single pixel.
-      textStyle.top = parseInt(textStyle.top) - 1 + 'px';
-
-      // Remove the lines that have scrolled off the top.
-      if (parseInt(textStyle.top) < -this.bufferPixels) {
+      while (parseInt(textStyle.top) < -this.bufferPixels) {
          if (lines.length > 1) {
             // The placeholder is lines[0], so remove the next.
             var height = lines[1].clientHeight;
             lines[1].remove();
             textStyle.top = parseInt(textStyle.top) + height + 'px';
+         } else {
+            break;
          }
       }
-
-      // Spawn new lines up to a 100px buffer.
-      while (parseInt(this.$.text.style.top) + this.$.text.offsetHeight <
-            this.clientHeight + this.bufferPixels)
-         this.spawnLine();
+      this.$.text.classList.remove('suspendtransition');
    },
 
-   tick: function() {
-
-   },
-
-   // adds a single line at the bottom
-   spawnLine: function() {
-      // TODO: source.isEmpty() check for when the source has no more words left (show loader).
-
+   getNextLine: function() {
       // Fill the placeholder with words until it overflows to a second line.
       var placeholder = this.$.placeholder;
       var next = this.sources[0].peek();
@@ -74,15 +82,15 @@ Polymer('ticker-tape', {
          next = this.sources[0].peek();
          placeholder.innerHTML += ' ' + next;
       }
-
-      // TODO: Instead of a DIV, make a ticker-tape-line here.
       var newLine = document.createElement('ticker-tape-line');
       newLine.line = placeholder.innerHTML;
-      this.$.text.appendChild(newLine);
-      placeholder.innerHTML = '';
-
+      return newLine;
       // TODO(bug): This doesn't handle hiphen word breaks.
-      //newLine.style.height = initialHeight + 'px';
+   },
+
+   // adds a single line at the bottom
+   spawnLine: function() {
+      // TODO: source.isEmpty() check for when the source has no more words left (show loader).      
    },
 
    viewHeight: function() {
