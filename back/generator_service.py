@@ -30,7 +30,7 @@ class GeneratorService(object):
       if not 'sources' in args:
          return BadRequest('Required param: sources.')
       try:
-         sources = json.loads(request.args['sources'])['sources']
+         sources = filter(lambda s : len(s) > 0, request.args['sources'].split(','))
       except:
          return BadRequest('Malformed JSON term list.')
 
@@ -68,14 +68,15 @@ class GeneratorService(object):
       if 'terms' not in request.args:
          return BadRequest('Required param: terms.')
       try:
-         terms = json.loads(request.args['terms'])['terms']
+         #terms = json.loads(request.args['terms'])['terms']
+         terms = filter(lambda s : len(s) > 0, request.args['terms'].split(','))
       except:
          return BadRequest('Malformed JSON term list.')
       try:
          ids = map(self.store.id, terms)
          resp = {}
          for i in range(len(ids)):
-            resp[terms[i]] = { 'positions': self.store.positions(ids[i]) }
+            resp[terms[i]] = { 'positions': self.store.allPositions(ids[i]) }
          return Response(json.dumps(resp))
       except:
          return BadRequest('Error retrieving term positions.')
@@ -88,7 +89,8 @@ class GeneratorService(object):
          Rule('/generate', endpoint='text_block'),
          Rule('/meta', endpoint='meta_data'),
          Rule('/available', endpoint='source_list'),
-         Rule('/', endpoint='otherwise'),
+         Rule('/<all>', redirect_to='play/api.html'),
+
       ])
       self.store = RedisWrapper()
 

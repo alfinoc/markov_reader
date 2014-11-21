@@ -52,6 +52,9 @@ class RedisWrapper:
    def positions(self, id, sourceKey):
       return self.store.hget(str(id) + ':positions', sourceKey)
 
+   def allPositions(self, id):
+      return self.store.hgetall(str(id) + ':positions')
+
    def successors(self, id, sourceKey):
       return self.store.hgetall('{0}:{1}:succ'.format(id, sourceKey))
 
