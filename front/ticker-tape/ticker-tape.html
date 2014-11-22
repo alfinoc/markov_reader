@@ -1,4 +1,4 @@
-<link rel="import" href="ticker-tape-line.html">
+<link rel="import" href="../text-generator/text-generator.html">
 
 <polymer-element name="ticker-tape">
    <template>
@@ -6,34 +6,64 @@
       <div id="text">
          <div id="placeholder"></div>
       </div>
+      <text-generator id="generator"></text-generator>
    </template>
    <script>
 
 Polymer('ticker-tape', {
+   publish: {
+      loading: {
+         value: false,
+         reflect: true
+      },
+
+      paused: {
+         value: true,
+         reflect: true
+      }
+   },
+
    created: function() {
-      this.bufferPixels = 100;
+      this.topBufferSize = 90;
       this.lastLineHeight = 0;
    },
 
    domReady: function() {
-      this.sources = this.querySelectorAll('text-source').array();
-      //this.$.text.style.top = this.clientHeight + 'px';
+      // Set up tape to start at the bottom of the page and preload the buffer.
+      this.pause();
+      this.$.text.style.top = this.clientHeight + 'px';
       this.refreshBuffer();
-      //setInterval(this.scrollUpOneLine.bind(this), 5000);
+      this.play();
+
+      // Set the scroll interval.
+      setInterval(function() {
+         // Scroll up if playing.
+         if (!this.paused)
+            this.scrollUpOneLine();
+      }.bind(this), 1000);
+   },
+
+   loadingChanged: function() {
+      if (this.loading)
+         this.pause();
+      else
+         this.play();
    },
 
    pause: function() {
       this.paused = true;
+      this.$.text.classList.remove('animate');
    },
 
    play: function() {
       this.paused = false;
+      this.$.text.classList.add('animate');
    },
 
    refreshBuffer: function() {
       this.pause();
       this.garbageCollectLines();
-      for (var i = 0; i < 10; i++)
+      for (var i = 0; i < 50; i++)
          this.loadNewLine();
       this.play();
    },
@@ -54,10 +84,10 @@ Polymer('ticker-tape', {
    },
 
    garbageCollectLines: function() {
-      this.$.text.classList.add('suspendtransition');
       var lines = this.$.text.children;
       var textStyle = this.$.text.style;
-      while (parseInt(textStyle.top) < -this.bufferPixels) {
+      
+      while (parseInt(textStyle.top) < -this.topBufferSize) {
          if (lines.length > 1) {
             // The placeholder is lines[0], so remove the next.
             var height = lines[1].clientHeight;
@@ -75,7 +105,7 @@ Polymer('ticker-tape', {
       var placeholder = this.$.placeholder;
       var appendNextSpan = function() {
          var span = document.createElement('span');
-         span.innerHTML = this.sources[0].peek();
+         span.innerHTML = this.$.generator.peek();
          placeholder.appendChild(span);
          return span;
       }.bind(this);
@@ -83,7 +113,7 @@ Polymer('ticker-tape', {
       appendNextSpan();
       var initialHeight = placeholder.clientHeight;
       while (placeholder.clientHeight == initialHeight) {
-         this.sources[0].next();
+         this.$.generator.next();
          placeholder.innerHTML += ' ';
          appendNextSpan();
       }

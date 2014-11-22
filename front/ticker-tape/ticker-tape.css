@@ -6,7 +6,14 @@
   position: absolute;
   top: 0px;
   width: 100vw;
-  transition: top 1.5s ease-in-out;
+}
+
+.animate {
+  transition: top 0.5s ease-in-out;
+}
+
+#text div:not(#placeholder) {
+  height: 30px;
 }
 
 #text div, #placeholder {
@@ -18,11 +25,6 @@
   text-align: justify;
   width: 100%;
   overflow: hidden;
-}
-
-#text div:not(#placeholder) > span:last-child {
-  height: 0px;
-  /display: block;
 }
 
 :host {

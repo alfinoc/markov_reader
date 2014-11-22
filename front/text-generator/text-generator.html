@@ -1,0 +1,58 @@
+<polymer-element name="text-generator">
+   <template></template>
+   <script>
+
+Polymer('text-generator', {
+   publish: {
+      minBufferSize: 100,
+      maxBufferSize: 1000,
+      empty: true,
+      loading: {
+         value: false,
+         reflect: true
+      },
+
+      // temp for debuggin
+      lol: 0
+   },
+
+   computed: {
+      empty: 'buffer.length == 0'
+   },
+
+   created: function() {
+      this.buffer = [];
+      this.fillBuffer();
+   },
+
+   next: function() {
+      var res = this.peek();
+      if (res != undefined)
+         this.buffer.shift();
+      return res; 
+   },
+
+   peek: function() {
+      this.fillBuffer();
+      if (this.empty)
+         return undefined;
+      return this.buffer[0];
+   },
+
+   fillBuffer: function() {
+      console.log('buffer fill requested');
+      if (!this.loading && this.buffer.length < this.minBufferSize) {
+         // TODO: ajax request here!
+         var prev = this.lol;
+         for (; this.lol < prev + 50; this.lol++)
+            this.buffer.push('heh lol ' + this.lol);
+         return;
+      } else if (!this.loading) {
+         // TODO: you'll need to set this above with the ajax (or data-bind)
+         return;
+      }
+   }
+});
+
+   </script>
+</polymer-element>
