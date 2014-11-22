@@ -17,9 +17,9 @@ Polymer('ticker-tape', {
 
    domReady: function() {
       this.sources = this.querySelectorAll('text-source').array();
-      this.$.text.style.top = this.clientHeight + 'px';
+      //this.$.text.style.top = this.clientHeight + 'px';
       this.refreshBuffer();
-      setInterval(this.scrollUpOneLine.bind(this), 5000);
+      //setInterval(this.scrollUpOneLine.bind(this), 5000);
    },
 
    pause: function() {
@@ -73,19 +73,25 @@ Polymer('ticker-tape', {
    getNextLine: function() {
       // Fill the placeholder with words until it overflows to a second line.
       var placeholder = this.$.placeholder;
-      var next = this.sources[0].peek();
+      var appendNextSpan = function() {
+         var span = document.createElement('span');
+         span.innerHTML = this.sources[0].peek();
+         placeholder.appendChild(span);
+         return span;
+      }.bind(this);
       // Prime with one token to get computed line height.
-      placeholder.innerHTML = next;
+      appendNextSpan();
       var initialHeight = placeholder.clientHeight;
       while (placeholder.clientHeight == initialHeight) {
          this.sources[0].next();
-         next = this.sources[0].peek();
-         placeholder.innerHTML += ' ' + next;
+         placeholder.innerHTML += ' ';
+         appendNextSpan();
       }
-      var newLine = document.createElement('ticker-tape-line');
-      newLine.line = placeholder.innerHTML;
+      var newLine = document.createElement('div');
+      newLine.innerHTML = placeholder.innerHTML;
+      placeholder.innerHTML = '';
       return newLine;
-      // TODO(bug): This doesn't handle hiphen word breaks.
+      // TODO(bug): This doesn't handle hiphen word breaks well.
    },
 
    // adds a single line at the bottom

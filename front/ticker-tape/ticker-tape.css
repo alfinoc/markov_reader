@@ -9,7 +9,7 @@
   transition: top 1.5s ease-in-out;
 }
 
-#text ticker-tape-line, #placeholder {
+#text div, #placeholder {
   box-sizing: border-box;
   display: block;
   line-height: 30px;
@@ -17,6 +17,12 @@
   padding-right: 10px;
   text-align: justify;
   width: 100%;
+  overflow: hidden;
+}
+
+#text div:not(#placeholder) > span:last-child {
+  height: 0px;
+  /display: block;
 }
 
 :host {
