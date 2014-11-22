@@ -7,6 +7,7 @@
          <div id="placeholder"></div>
       </div>
       <text-generator id="generator"></text-generator>
+      <!-- TODO: spinner attached to generator.error -->
    </template>
    <script>
 
@@ -24,7 +25,8 @@ Polymer('ticker-tape', {
    },
 
    created: function() {
-      this.topBufferSize = 90;
+      this.topBufferSize = 150;
+      this.bottomBufferSize = 150;
       this.lastLineHeight = 0;
    },
 
@@ -37,9 +39,10 @@ Polymer('ticker-tape', {
 
       // Set the scroll interval.
       setInterval(function() {
-         // Scroll up if playing.
-         if (!this.paused)
-            this.scrollUpOneLine();
+         if (this.paused)
+            return;
+         this.refreshBuffer();
+         this.scrollUpOneLine();
       }.bind(this), 1000);
    },
 
@@ -62,10 +65,35 @@ Polymer('ticker-tape', {
 
    refreshBuffer: function() {
       this.pause();
-      this.garbageCollectLines();
-      for (var i = 0; i < 50; i++)
+      // Garbage collect top lines.
+      var lines = this.$.text.children;
+      while (lines.length > 1 && this.idealTop() > this.actualTop()) {
+         // The placeholder is lines[0], so remove the next.
+         var height = lines[1].clientHeight;
+         lines[1].remove();
+         this.$.text.style.top = parseInt(this.$.text.style.top) + height + 'px';
+      }
+
+      // Buffer lines at the bottom;
+      while (this.idealBottom() >= this.actualBottom())
          this.loadNewLine();
       this.play();
+   },
+
+   idealTop: function() {
+      return this.offsetTop - this.topBufferSize;
+   },
+
+   actualTop: function() {
+      return this.$.text.offsetTop;
+   },
+
+   idealBottom: function() {
+      return this.viewHeight() + this.bottomBufferSize;
+   },
+
+   actualBottom: function() {
+      return this.$.text.offsetTop + this.$.text.offsetHeight;
    },
 
    loadNewLine: function() {
@@ -84,20 +112,7 @@ Polymer('ticker-tape', {
    },
 
    garbageCollectLines: function() {
-      var lines = this.$.text.children;
-      var textStyle = this.$.text.style;
       
-      while (parseInt(textStyle.top) < -this.topBufferSize) {
-         if (lines.length > 1) {
-            // The placeholder is lines[0], so remove the next.
-            var height = lines[1].clientHeight;
-            lines[1].remove();
-            textStyle.top = parseInt(textStyle.top) + height + 'px';
-         } else {
-            break;
-         }
-      }
-      this.$.text.classList.remove('suspendtransition');
    },
 
    getNextLine: function() {

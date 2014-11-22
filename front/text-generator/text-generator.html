@@ -40,7 +40,6 @@ Polymer('text-generator', {
    },
 
    fillBuffer: function() {
-      console.log('buffer fill requested');
       if (!this.loading && this.buffer.length < this.minBufferSize) {
          // TODO: ajax request here!
          var prev = this.lol;
