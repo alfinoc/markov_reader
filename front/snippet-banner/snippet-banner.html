@@ -2,22 +2,33 @@
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="../icons/icons.html">
 
-<polymer-element name="snippet-banner" class="dark" horizontal layout>
+<polymer-element name="snippet-banner" horizontal layout>
    <template>
+      <link rel="stylesheet" type="text/css" href="../control-banner/banner.css">
       <style>
          :host {
-            top: initial;
-            bottom: 0px;
+            position: initial;
+            color: white;
+            padding: 5px;
+         }
+
+         .blackunder {
+            border-bottom: 2px solid black;
+         }
+         .whiteunder {
+            border-bottom: 2px solid white;
          }
       </style>
-      <link rel="stylesheet" type="text/css" href="banner.css">
-      lol
+      
+      <span class='blackunder'>lol</span><span class="whiteunder">more text</span>
       <paper-shadow z="1"></paper-shadow>
-
    </template>
    <script>
 
 Polymer('snippet-banner', {
+   created: function() {
+      this.style.backgroundColor = window.getNextColor();
+   }
 });
 
    </script>

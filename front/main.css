@@ -31,3 +31,10 @@ body {
 textarea, input {
    font-family: inherit;
 }
+
+#bannercontainer {
+   position: absolute;
+   bottom: 0px;
+   width: 100vw;
+   box-sizing: border-box;
+}
