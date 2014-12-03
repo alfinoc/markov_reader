@@ -2,16 +2,19 @@ body {
    font-family: 'Avenir Next', 'Roboto', 'Roboto_Backup', 'Inconsolata', 'Inconsolata_Backup', monospace;
    padding: 0px;
    margin: 0px;
+   position: relative;
 }
 
 .light {
    background-color: white;
    color: rgb(70, 70, 70);
+   fill: rgb(70, 70, 70);
 }
 
 .dark {
    background-color: rgb(29, 29, 29);
    color: rgb(209, 209, 209);
+   fill: rgb(209, 209, 209);
 }
 
 /* Duplicated because mobile freaks about the /deep/ stuff. */

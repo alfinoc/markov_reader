@@ -1,0 +1,48 @@
+.textbutton {
+  padding-left: 7px;
+  padding-right: 7px;
+  position: relative;
+  transition: color 0.1s ease-in-out;
+}
+
+.textbutton, paper-slider, pause-icon, play-icon {
+  cursor: pointer;
+}
+
+.textbutton:hover {
+  color: #E09690;
+}
+
+:host {
+  background-color: inherit;
+  box-sizing: border-box;
+  left: 0px;
+  letter-spacing: 2px;
+  padding: 7px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 0px;
+  width: 100vw;
+  z-index: 100;
+}
+
+paper-slider {
+  height: 20px;
+  margin-top: -5px;
+}
+
+/* progress bar color */
+paper-slider::shadow #sliderBar::shadow #activeProgress,
+paper-slider::shadow #sliderKnobInner {
+   background-color: #9CD9F0;
+}
+
+pause-icon, play-icon {
+  height: 20px;
+  transition: fill 0.1s ease-in-out;
+  width: 20px;
+}
+
+pause-icon:hover, play-icon:hover {
+  fill: #72B3CC;
+}
