@@ -1,32 +1,87 @@
 <link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="../icons/icons.html">
 
-<polymer-element name="control-banner" class="dark">
+<polymer-element name="control-banner" class="dark" horizontal layout>
    <template>
-      <div>lol</div>
-      <play-icon color="blue"></play-icon>
-      <paper-shadow z="1"></paper-shadow>
       <style>
          :host {
-            padding: 5px;
-            position: fixed;
+            padding: 7px;
+            position: absolute;
             top: 0px;
             left: 0px;
             width: 100vw;
             background-color: inherit;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            letter-spacing: 2px;
          }
 
-         play-icon {
-            fill: lightblue;
+         play-icon, pause-icon {
+            fill: #9CD9F0;
             height: 20px;
             width: 20px;
+            transition: fill 0.2s ease-in-out;
          }
+
+         play-icon, pause-icon, paper-slider {
+            cursor: pointer;
+         }
+
+         play-icon:hover, pause-icon:hover {
+            fill: #72B3CC;
+         }
+
+         .textbutton {
+            padding-left: 7px;
+            padding-right: 7px;
+            position: relative;
+         }
+
+         paper-slider {
+            height: 20px;
+            margin-top: -5px;
+         }
+
+         /* progress bar color */
+         paper-slider::shadow #sliderBar::shadow #activeProgress,
+         paper-slider::shadow #sliderKnobInner {
+           background-color: #9CD9F0;
+         }
+/*
+         paper-slider /deep/ .expand:not(.pin) > #sliderKnob > #sliderKnobInner {
+            height: 12px;
+            width: 12px;
+         }
+         */
+
+
       </style>
+
+
+      <pause-icon></pause-icon>
+      <div flex></div>
+      <div class="textbutton">Sources</div>
+      <div flex></div>
+      <div class="textbutton">
+         Frequency
+         <paper-slider min="1" max="9" value="5" snaps></paper-slider>
+      </div>
+      
+      <div flex></div>
+      <play-icon></play-icon>
+      <paper-shadow z="1"></paper-shadow>
+
    </template>
    <script>
 
 Polymer('control-banner', {
-   
+   publish: {
+      playing: {
+         value: true,
+         reflect: true
+      }
+   }
 });
 
    </script>
