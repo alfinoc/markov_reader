@@ -38,12 +38,14 @@ Polymer('ticker-tape', {
       this.play();
 
       // Set the scroll interval.
+      /*
       setInterval(function() {
          if (this.paused)
             return;
          this.refreshBuffer();
          this.scrollUpOneLine();
       }.bind(this), 1000);
+      */
    },
 
    loadingChanged: function() {

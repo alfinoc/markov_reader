@@ -4,28 +4,27 @@ body {
    margin: 0px;
 }
 
-* /deep/ .light {
+.light {
    background-color: white;
    color: rgb(70, 70, 70);
 }
 
+.dark {
+   background-color: rgb(29, 29, 29);
+   color: rgb(209, 209, 209);
+}
+
+/* Duplicated because mobile freaks about the /deep/ stuff. */
 * /deep/ .dark {
    background-color: rgb(29, 29, 29);
    color: rgb(209, 209, 209);
 }
 
+* /deep/ .light {
+   background-color: white;
+   color: rgb(70, 70, 70);
+}
+
 textarea, input {
    font-family: inherit;
-}
-
-@font-face {
-   font-family: "Gill_Sans";
-   src: url(images/Gill_Sans_Light.ttf);
-   font-style: normal;
-}
-
-@font-face {
-   font-family: "Gill_Sans";
-   src: url(images/Gill_Sans_Light_Italic.ttf);
-   font-style: italic;
 }
