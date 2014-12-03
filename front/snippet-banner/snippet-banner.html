@@ -11,16 +11,49 @@
             color: white;
             padding: 5px;
          }
-
+/*
          .blackunder {
             border-bottom: 2px solid black;
          }
+
          .whiteunder {
             border-bottom: 2px solid white;
          }
+*/
+         .left {
+            padding-right: 1em;
+            text-align: right;
+         }
+
+         .right {
+            padding-left: 1em;
+            text-align: left;
+         }
+
+         .left, .right {
+            text-transform: initial;
+            letter-spacing: normal;
+         }
+
+         left-icon, right-icon {
+            height: 20px;
+            width: 20px;
+            fill: white;
+         }
+
+         left-icon:hover, right-icon:hover {
+
+         }
       </style>
-      
-      <span class='blackunder'>lol</span><span class="whiteunder">more text</span>
+      <left-icon></left-icon>
+      <div class="left" flex>
+         Wow this is exactly what I was
+      </div>
+      <span>looking</span>
+      <div class="right" flex>
+         for
+      </div>
+      <right-icon></right-icon>
       <paper-shadow z="1"></paper-shadow>
    </template>
    <script>
