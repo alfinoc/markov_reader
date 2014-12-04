@@ -21,20 +21,15 @@ body {
 * /deep/ .dark {
    background-color: rgb(29, 29, 29);
    color: rgb(209, 209, 209);
+   fill: rgb(209, 209, 209);
 }
 
 * /deep/ .light {
    background-color: white;
    color: rgb(70, 70, 70);
+   fill: rgb(70, 70, 70);
 }
 
 textarea, input {
    font-family: inherit;
-}
-
-#bannercontainer {
-   position: absolute;
-   bottom: 0px;
-   width: 100vw;
-   box-sizing: border-box;
 }

@@ -1,3 +1,4 @@
+
 <link rel="import" href="../text-generator/text-generator.html">
 
 <polymer-element name="ticker-tape">
@@ -6,8 +7,6 @@
       <div id="text">
          <div id="placeholder"></div>
       </div>
-      <text-generator id="generator"></text-generator>
-      <!-- TODO: spinner attached to generator.error -->
    </template>
    <script>
 
@@ -33,7 +32,8 @@ Polymer('ticker-tape', {
    domReady: function() {
       // Set up tape to start at the bottom of the page and preload the buffer.
       this.pause();
-      this.$.generator.callback = this.play.bind(this);
+      this.generator = this.querySelector('text-generator');
+      this.generator.callback = this.play.bind(this);
       this.$.text.style.top = this.clientHeight / 2 + 'px';
 
       // Set the scroll interval.
@@ -42,7 +42,7 @@ Polymer('ticker-tape', {
             return;
          this.refreshBuffer();
          this.scrollUpOneLine();
-      }.bind(this), 1000);
+      }.bind(this), 5000);
 
       this.play();
    },
@@ -129,7 +129,7 @@ Polymer('ticker-tape', {
       }
       var appendNextSpan = function() {
          var span = document.createElement('span');
-         var term = this.$.generator.next();
+         var term = this.generator.next();
          // Propagate empty buffer case. Pause and wait until the text-generator
          // hits play again (on load).
          if (term == undefined) {

@@ -1,0 +1,62 @@
+<link rel="import" href="../ticker-tape/ticker-tape.html">
+<link rel="import" href="../control-banner/control-banner.html">
+<link rel="import" href="../snippet-banner/snippet-banner.html">
+
+<polymer-element name="main-controller" attributes="sources seed">
+   <template>
+      <style>
+         :host {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+         }
+
+         #bannercontainer {
+            position: absolute;
+            bottom: 0px;
+            width: 100vw;
+            box-sizing: border-box;
+         }
+      </style>
+      <control-banner seed="{{ seed }}" selectedSources="{{ sources }}"
+                      on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}">
+      </control-banner>
+      <ticker-tape id="tape" class="light">
+         <text-generator seed="{{ seed }}" sources="{{ sources }}"></text-generator>
+      </ticker-tape>
+      <div id="bannercontainer">
+         <template repeat="{{ sources }}">
+            <snippet-banner></snippet-banner>
+         </template>
+      </div>
+   </template>
+      <script>
+
+Polymer('main-controller', {
+   publish: {
+      sources: {
+         value: [],
+         reflect: true
+      },
+      seed: {
+         value: '',
+         reflect: true
+      },
+      loading: {
+         value: false,
+         reflect: true
+      },
+
+      dispatchPlay: function() {
+         this.$.tape.play();
+      },
+
+      dispatchPause: function() {
+         this.$.tape.pause();
+      }
+   }
+});
+
+   </script>
+</polymer-element>

@@ -17,8 +17,8 @@
          <div flex></div>
          <div class="textbutton">Frequency</div>
          <div flex></div>
-         <pause-icon></pause-icon>
-         <play-icon></play-icon>
+         <pause-icon on-click="{{ pause }}"></pause-icon>
+         <play-icon on-click="{{ play }}"></play-icon>
          <paper-shadow z="1"></paper-shadow>
       </div>
       <div id="sources" class="banner menu">
@@ -79,6 +79,14 @@ Polymer('control-banner', {
       for (key in dict)
          res.push({ 'key': key, 'value': dict[key]});
       return res;
+   },
+
+   play: function() {
+      this.fire('play');
+   },
+
+   pause: function() {
+      this.fire('pause');
    }
 });
 

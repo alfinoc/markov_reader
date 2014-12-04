@@ -5,9 +5,10 @@
       <core-ajax
          id="ajax"
          url="../../generate"
-         params='{"sources":"dracula.txt", "length":"1000"}'
+         params="{{ requestParams }}"
          handleAs="json"
-         on-core-response="{{ handleNewBlock }}"></core-ajax>
+         on-core-response="{{ handleNewBlock }}"
+         on-core-error="{{ onError }}"></core-ajax>
    </template>
    <script>
 
@@ -15,36 +16,43 @@ Polymer('text-generator', {
    publish: {
       minBufferSize: 300,
       maxBufferSize: 1000,
-      empty: true,
       loading: {
          value: false,
          reflect: true
       },
-
-      lol: 0,
-
       seed: {
          value: '',
          reflect: true
       },
+      sources: {
+         value: [],
+         reflect: true
+      },
+      requestParams: '{}'
    },
 
-   computed: {
-      empty: 'buffer.length == 0'
+   observe: {
+      sources: 'updateRequest',
+      seed: 'updateRequest'
    },
 
    created: function() {
       this.buffer = [];
       this.sources = [];
+      this.minBufferSize = 300;
    },
 
    handleNewBlock: function(e) {
-      var terms = e.detail.response.generated;
-      this.seed = terms[terms.length - 1];
-      this.buffer.push.apply(this.buffer, terms);
-      this.loading = false;
-      if (this.callback)
-         this.callback();
+      try {
+         var terms = e.detail.response.generated;
+         this.seed = terms[terms.length - 1];
+         this.buffer.push.apply(this.buffer, terms);
+         this.loading = false;
+         if (this.callback)
+            this.callback();
+      } catch (err) {
+         this.onError(err);
+      }
    },
 
    next: function(callback) {
@@ -56,7 +64,7 @@ Polymer('text-generator', {
 
    peek: function() {
       this.fillBuffer();
-      if (this.empty)
+      if (this.buffer.length == 0)
          return undefined;
       return this.buffer[0];
    },
@@ -68,6 +76,19 @@ Polymer('text-generator', {
          this.loading = true;
          this.$.ajax.go();
       }
+   },
+
+   updateRequest: function() {
+      this.requestParams = JSON.stringify({
+         'sources': this.sources,
+         'seed': this.seed,
+         'length': '1000'
+      })
+   },
+
+   onError: function(err) {
+      this.loading = false;
+      console.log(err);
    }
 });
 
