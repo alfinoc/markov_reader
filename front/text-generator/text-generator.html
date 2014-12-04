@@ -1,5 +1,15 @@
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
 <polymer-element name="text-generator">
-   <template></template>
+   <template>
+      <core-ajax
+         id="ajax"
+         url="../../generate"
+         params='{"sources":"dracula.txt"}'
+         handleAs="json"
+         on-core-response="{{ handleNewBlock }}"
+         loading="{{ loading }}"></core-ajax>
+   </template>
    <script>
 
 Polymer('text-generator', {
@@ -12,8 +22,12 @@ Polymer('text-generator', {
          reflect: true
       },
 
-      // temp for debuggin
-      lol: 0
+      lol: 0,
+
+      seed: {
+         value: '',
+         reflect: true
+      },
    },
 
    computed: {
@@ -22,7 +36,17 @@ Polymer('text-generator', {
 
    created: function() {
       this.buffer = [];
+      this.sources = [];
+   },
+
+   domReady: function() {
       this.fillBuffer();
+   },
+
+   handleNewBlock: function(e) {
+      var terms = e.detail.response.generated;
+      this.seed = terms[terms.length - 1];
+      this.buffer.push.apply(this.buffer, terms);
    },
 
    next: function() {
@@ -45,6 +69,8 @@ Polymer('text-generator', {
          var prev = this.lol;
          for (; this.lol < prev + 50; this.lol++)
             this.buffer.push('heh lol ' + this.lol);
+         return;
+         //this.$.ajax.go();
          return;
       } else if (!this.loading) {
          // TODO: you'll need to set this above with the ajax (or data-bind)

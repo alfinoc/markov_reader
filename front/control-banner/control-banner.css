@@ -1,4 +1,4 @@
-pause-icon, play-icon {
+pause-icon, play-icon, circle-dot-icon {
   height: 20px;
   transition: fill 0.1s ease-in-out;
   width: 20px;
@@ -6,6 +6,10 @@ pause-icon, play-icon {
 
 pause-icon:hover, play-icon:hover {
   fill: #72B3CC;
+}
+
+circle-dot-icon:hover {
+   fill: #8EB33B;
 }
 
 :host {
@@ -42,4 +46,12 @@ paper-radio-button::shadow #onRadio {
 
 paper-radio-button::shadow #ink {
   color: #E09690;
+}
+
+.textbutton, paper-slider, pause-icon, play-icon, circle-dot-icon {
+  cursor: pointer;
+}
+
+a {
+   display: flex;
 }

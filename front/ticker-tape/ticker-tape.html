@@ -33,19 +33,19 @@ Polymer('ticker-tape', {
    domReady: function() {
       // Set up tape to start at the bottom of the page and preload the buffer.
       this.pause();
-      this.$.text.style.top = this.clientHeight + 'px';
+      this.$.text.style.top = this.clientHeight / 2 + 'px';
       this.refreshBuffer();
       this.play();
 
       // Set the scroll interval.
-      /*
+     
       setInterval(function() {
          if (this.paused)
             return;
          this.refreshBuffer();
          this.scrollUpOneLine();
       }.bind(this), 1000);
-      */
+      /**/
    },
 
    loadingChanged: function() {

@@ -5,10 +5,6 @@
   transition: color 0.1s ease-in-out;
 }
 
-.textbutton, paper-slider, pause-icon, play-icon {
-  cursor: pointer;
-}
-
 .textbutton:hover {
   color: #E09690;
 }

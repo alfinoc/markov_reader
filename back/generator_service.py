@@ -31,8 +31,10 @@ class GeneratorService(object):
          return BadRequest('Required param: sources.')
       try:
          sources = filter(lambda s : len(s) > 0, request.args['sources'].split(','))
+         if len(sources) < 1:
+            return BadRequest('Provide at least one source.')
       except:
-         return BadRequest('Malformed JSON term list.')
+         return BadRequest('Malformed source list.')
 
       # Load SerialIndex for each requested file.
       for srcKey in sources:
