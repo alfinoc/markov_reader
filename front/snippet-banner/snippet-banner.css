@@ -1,0 +1,56 @@
+#leftbutton, #rightbutton {
+  cursor: pointer;
+  width: 30px;
+}
+
+#leftbutton, #rightbutton, left-icon, right-icon {
+  height: 20px;
+}
+
+#leftbutton, .right {
+  text-align: left;
+}
+
+#leftbutton:hover left-icon {
+  -webkit-animation: scootleft forwards 0.1s;
+}
+
+#pivot {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  text-transform: uppercase;
+}
+
+#rightbutton, .left {
+  text-align: right;
+}
+
+#rightbutton:hover right-icon {
+  -webkit-animation: scootright forwards 0.1s;
+}
+
+.left, .right {
+  letter-spacing: normal;
+  text-transform: initial;
+}
+
+:host {
+  color: white;
+  padding: 5px;
+  position: initial;
+}
+
+left-icon, right-icon {
+  fill: white;
+  width: 20px;
+}
+
+@-webkit-keyframes scootleft {
+   from { margin-left: 0px; }
+   to { margin-left: -3px; }
+}
+
+@-webkit-keyframes scootright {
+   from { margin-right: 0px; }
+   to { margin-right: -3px; }
+}

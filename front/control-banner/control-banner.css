@@ -1,0 +1,45 @@
+pause-icon, play-icon {
+  height: 20px;
+  transition: fill 0.1s ease-in-out;
+  width: 20px;
+}
+
+pause-icon:hover, play-icon:hover {
+  fill: #72B3CC;
+}
+
+:host {
+   letter-spacing: 2px;
+   position: absolute;
+   text-transform: uppercase;
+}
+
+.menu {
+   background-color: white;
+   color: black;
+   z-index: 99;
+   padding: 7px;
+   text-transform: none;
+   margin-top: 0px;
+   transition: margin-top ease-in-out 0.3s;
+}
+
+.menu.hide {
+   margin-top: -50px;
+}
+
+paper-radio-group {
+   text-align: center;
+}
+
+paper-radio-button {
+   padding: 0px !important;
+}
+
+paper-radio-button::shadow #onRadio {
+  background-color: black;
+}
+
+paper-radio-button::shadow #ink {
+  color: #E09690;
+}
