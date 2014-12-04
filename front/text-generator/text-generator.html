@@ -5,16 +5,15 @@
       <core-ajax
          id="ajax"
          url="../../generate"
-         params='{"sources":"dracula.txt"}'
+         params='{"sources":"dracula.txt", "length":"1000"}'
          handleAs="json"
-         on-core-response="{{ handleNewBlock }}"
-         loading="{{ loading }}"></core-ajax>
+         on-core-response="{{ handleNewBlock }}"></core-ajax>
    </template>
    <script>
 
 Polymer('text-generator', {
    publish: {
-      minBufferSize: 100,
+      minBufferSize: 300,
       maxBufferSize: 1000,
       empty: true,
       loading: {
@@ -39,21 +38,20 @@ Polymer('text-generator', {
       this.sources = [];
    },
 
-   domReady: function() {
-      this.fillBuffer();
-   },
-
    handleNewBlock: function(e) {
       var terms = e.detail.response.generated;
       this.seed = terms[terms.length - 1];
       this.buffer.push.apply(this.buffer, terms);
+      this.loading = false;
+      if (this.callback)
+         this.callback();
    },
 
-   next: function() {
+   next: function(callback) {
       var res = this.peek();
       if (res != undefined)
          this.buffer.shift();
-      return res; 
+      return res;
    },
 
    peek: function() {
@@ -64,17 +62,11 @@ Polymer('text-generator', {
    },
 
    fillBuffer: function() {
+      console.log(this.loading + ', buffer size: ' + this.buffer.length);
       if (!this.loading && this.buffer.length < this.minBufferSize) {
-         // TODO: ajax request here!
-         var prev = this.lol;
-         for (; this.lol < prev + 50; this.lol++)
-            this.buffer.push('heh lol ' + this.lol);
-         return;
-         //this.$.ajax.go();
-         return;
-      } else if (!this.loading) {
-         // TODO: you'll need to set this above with the ajax (or data-bind)
-         return;
+         console.log('  firing ajax request');
+         this.loading = true;
+         this.$.ajax.go();
       }
    }
 });

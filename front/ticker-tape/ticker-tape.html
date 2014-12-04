@@ -33,19 +33,18 @@ Polymer('ticker-tape', {
    domReady: function() {
       // Set up tape to start at the bottom of the page and preload the buffer.
       this.pause();
+      this.$.generator.callback = this.play.bind(this);
       this.$.text.style.top = this.clientHeight / 2 + 'px';
-      this.refreshBuffer();
-      this.play();
 
       // Set the scroll interval.
-     
       setInterval(function() {
          if (this.paused)
             return;
          this.refreshBuffer();
          this.scrollUpOneLine();
       }.bind(this), 1000);
-      /**/
+
+      this.play();
    },
 
    loadingChanged: function() {
@@ -76,9 +75,10 @@ Polymer('ticker-tape', {
          this.$.text.style.top = parseInt(this.$.text.style.top) + height + 'px';
       }
 
-      // Buffer lines at the bottom;
+      // Buffer lines at the bottom. If we hit a 'false', the buffer needs to fill.
+      // In this case, we wait for play() to be called again by the generator.
       while (this.idealBottom() >= this.actualBottom())
-         this.loadNewLine();
+         if (!this.loadNewLine()) return;
       this.play();
    },
 
@@ -100,8 +100,11 @@ Polymer('ticker-tape', {
 
    loadNewLine: function() {
       var newLine = this.getNextLine();
+      if (newLine == undefined)
+         return false;
       this.$.text.appendChild(newLine);
       this.lastLineHeight = newLine.clientHeight;
+      return true;
    },
 
    scrollUpOneLine: function() {
@@ -113,37 +116,46 @@ Polymer('ticker-tape', {
       }
    },
 
-   garbageCollectLines: function() {
-      
-   },
-
    getNextLine: function() {
-      // Fill the placeholder with words until it overflows to a second line.
+      // Get the height of one line of text in the placeholder.
       var placeholder = this.$.placeholder;
+      var initialHeight;
+      if (placeholder.innerHTML == '') {
+         placeholder.innerHTML = 'dummy';
+         initialHeight = placeholder.clientHeight;
+         placeholder.innerHTML = '';
+      } else {
+         initialHeight = placeholder.clientHeight;
+      }
       var appendNextSpan = function() {
          var span = document.createElement('span');
-         span.innerHTML = this.$.generator.peek();
+         var term = this.$.generator.next();
+         // Propagate empty buffer case. Pause and wait until the text-generator
+         // hits play again (on load).
+         if (term == undefined) {
+            this.pause();
+            return undefined;
+         }
+         span.innerHTML = term
          placeholder.appendChild(span);
          return span;
       }.bind(this);
-      // Prime with one token to get computed line height.
-      appendNextSpan();
-      var initialHeight = placeholder.clientHeight;
-      while (placeholder.clientHeight == initialHeight) {
-         this.$.generator.next();
+
+      // Fill the placeholder with words until it overflows to a second line.
+      do {
+         var next = appendNextSpan();
+         // The buffer is empty :( Wait for the callback to be and try again.
+         if (next == undefined)
+            return;
          placeholder.innerHTML += ' ';
-         appendNextSpan();
-      }
+      } while (placeholder.clientHeight == initialHeight);
+      
+      // Return the new line and clear the placeholder.
       var newLine = document.createElement('div');
       newLine.innerHTML = placeholder.innerHTML;
       placeholder.innerHTML = '';
       return newLine;
       // TODO(bug): This doesn't handle hiphen word breaks well.
-   },
-
-   // adds a single line at the bottom
-   spawnLine: function() {
-      // TODO: source.isEmpty() check for when the source has no more words left (show loader).      
    },
 
    viewHeight: function() {
