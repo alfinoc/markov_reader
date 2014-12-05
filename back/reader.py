@@ -137,21 +137,25 @@ builds a list of terms based on the provided request parameters:
    length: The length of the returned list. Any integer.
    sequential: The minimum length of a sequence read directly from a text. Any
          integer.
-using the provided MultiReader 'reader' and the persistent 'store'
+using the provided MultiReader 'reader' and the persistent 'store'.
+
+terms are returned as a list of lists l, each l containing a human-readable term
+at index 0, and, if the term is part of a sequential stretch, the source for that
+stretch at index 1.
 """
 def generateBlock(seed, length, sequential, reader, store):
    # Compose a list of generated terms.
    seed = reader.previous()
-   generatedList = [seed]
+   generatedList = [[seed]]
    pos = 0
    for i in range(1, length + 1):
       if i % sequential == 0:
          # attempt a jump!
          reader.switchIndex()
-         generatedList.append(reader.next())
+         generatedList.append([reader.next()])
          # avoid the position lookups if we're jumping on every term
          if sequential > 1:
-            lastId = generatedList[len(generatedList) - 1]
+            lastId = generatedList[len(generatedList) - 1][0]
             srcKey = reader.getCurrentSourceKey()
             pos = choice(loads(store.positions(lastId, srcKey)))
       else:
@@ -159,5 +163,8 @@ def generateBlock(seed, length, sequential, reader, store):
          sourceKey = reader.getCurrentSourceKey()
          pos += 1
          pos %= store.sourceLength(sourceKey)
-         generatedList.append(store.sourceAtPosition(sourceKey, pos))
-   return map(store.term, generatedList)
+         generatedList.append([store.sourceAtPosition(sourceKey, pos), sourceKey])
+
+   for bundle in generatedList:
+      bundle[0] = store.term(bundle[0])
+   return generatedList
