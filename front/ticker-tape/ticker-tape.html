@@ -11,8 +11,8 @@
 
 Polymer('ticker-tape', {
    publish: {
-      paused: {
-         value: true,
+      playing: {
+         value: false,
          reflect: true
       }
    },
@@ -32,32 +32,35 @@ Polymer('ticker-tape', {
       this.$.text.style.top = '0px';
 
       // Set the scroll interval.
-      setInterval(function() {
-         if (this.paused)
-            return;
-         this.refreshBuffer();
-         this.scrollUpOneLine();
-      }.bind(this), 5000);
-
+      setInterval(this.periodicRefresh.bind(this), 5000);
       this.play();
    },
 
+   periodicRefresh: function() {
+      if (!this.playing)
+         return;
+      this.pause();
+      this.refreshBuffer();
+      this.scrollUpOneLine();
+      this.resumeAnimation();
+   },
+
    pause: function() {
-      this.paused = true;
+      this.playing = false;
       this.$.text.classList.remove('animate');
    },
 
    play: function() {
-      this.paused = false;
+      this.resumeAnimation();
+      this.periodicRefresh();
+   },
+
+   resumeAnimation: function() {
+      this.playing = true;
       this.$.text.classList.add('animate');
    },
 
-   pausedChanged: function() {
-      console.log('huh...');
-   },
-
    refreshBuffer: function() {
-      this.pause();
       // Garbage collect top lines.
       var lines = this.$.text.children;
       while (lines.length > 1 && this.idealTop() > this.actualTop()) {
@@ -71,7 +74,6 @@ Polymer('ticker-tape', {
       // In this case, we wait for play() to be called again by the generator.
       while (this.idealBottom() >= this.actualBottom())
          if (!this.loadNewLine()) return;
-      this.play();
    },
 
    idealTop: function() {

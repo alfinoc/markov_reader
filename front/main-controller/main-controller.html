@@ -23,7 +23,7 @@
                       on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}"
                       playing="{{ playing }}" loading="{{ loading }}">
       </control-banner>
-      <ticker-tape id="tape" class="light" paused="{{ !playing }}">
+      <ticker-tape id="tape" class="light" playing="{{ playing }}">
          <text-generator seed="{{ seed }}" sources="{{ sources }}"
                          loading="{{ loading }}">
          </text-generator>
