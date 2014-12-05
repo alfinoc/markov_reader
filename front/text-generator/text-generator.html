@@ -37,7 +37,8 @@ Polymer('text-generator', {
 
    observe: {
       sources: 'updateRequest',
-      seed: 'updateRequest'
+      seed: 'updateRequest',
+      sequential: 'updateRequest'
    },
 
    created: function() {
@@ -78,11 +79,16 @@ Polymer('text-generator', {
    },
 
    fillBuffer: function() {
+      
       if (!this.loading && this.buffer.length < this.minBufferSize) {
-         console.log('  firing ajax request, buffer size: ' + this.buffer.length);
-         this.loading = true;
-         this.$.ajax.go();
+         console.log('attempt buffer fill');
+         if (this.validRequest()) {
+            console.log('  firing ajax request, buffer size: ' + this.buffer.length);
+            this.loading = true;
+            this.$.ajax.go();
+         }
       }
+      
    },
 
    updateRequest: function() {
@@ -92,6 +98,13 @@ Polymer('text-generator', {
          'sequential': this.sequential,
          'length': '1000'
       })
+   },
+
+   validRequest: function() {
+      if (!this.requestParams)
+         return false;
+      var req = JSON.parse(this.requestParams);
+      return req.sources && req.sources.length > 1;
    },
 
    onError: function(err) {

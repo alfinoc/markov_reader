@@ -55,7 +55,7 @@ circle-dot-icon:hover {
 .menu {
    background-color: white;
    color: black;
-   z-index: 99;
+   z-index: -1;
    padding: 7px;
    text-transform: none;
    margin-top: 0px;

@@ -21,9 +21,9 @@
          <div id="multibutton" loading?="{{ loading }}" playing?="{{ playing }}">
             <pause-icon on-click="{{ pause }}"></pause-icon>
             <play-icon on-click="{{ play }}"></play-icon>
-            <paper-shadow z="1"></paper-shadow>
             <paper-spinner active></paper-spinner>
          </div>
+         <paper-shadow z="1"></paper-shadow>
       </div>
       <div id="sources" class="banner menu">
          <paper-radio-group horizontal layout multi selected="{{ selectedSources }}">
