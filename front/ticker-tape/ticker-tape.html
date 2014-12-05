@@ -1,4 +1,3 @@
-
 <link rel="import" href="../text-generator/text-generator.html">
 
 <polymer-element name="ticker-tape">
@@ -12,11 +11,6 @@
 
 Polymer('ticker-tape', {
    publish: {
-      loading: {
-         value: false,
-         reflect: true
-      },
-
       paused: {
          value: true,
          reflect: true
@@ -34,7 +28,8 @@ Polymer('ticker-tape', {
       this.pause();
       this.generator = this.querySelector('text-generator');
       this.generator.callback = this.play.bind(this);
-      this.$.text.style.top = this.clientHeight / 2 + 'px';
+      //this.$.text.style.top = this.clientHeight / 2 + 'px';
+      this.$.text.style.top = '0px';
 
       // Set the scroll interval.
       setInterval(function() {
@@ -47,13 +42,6 @@ Polymer('ticker-tape', {
       this.play();
    },
 
-   loadingChanged: function() {
-      if (this.loading)
-         this.pause();
-      else
-         this.play();
-   },
-
    pause: function() {
       this.paused = true;
       this.$.text.classList.remove('animate');
@@ -62,6 +50,10 @@ Polymer('ticker-tape', {
    play: function() {
       this.paused = false;
       this.$.text.classList.add('animate');
+   },
+
+   pausedChanged: function() {
+      console.log('huh...');
    },
 
    refreshBuffer: function() {
@@ -108,12 +100,10 @@ Polymer('ticker-tape', {
    },
 
    scrollUpOneLine: function() {
-      if (!this.paused) {
-         this.async(function() {
-            var textStyle = this.$.text.style;
-            textStyle.top = parseInt(textStyle.top) - this.lastLineHeight + 'px';
-         });
-      }
+      this.async(function() {
+         var textStyle = this.$.text.style;
+         textStyle.top = parseInt(textStyle.top) - this.lastLineHeight + 'px';
+      });
    },
 
    getNextLine: function() {
@@ -136,7 +126,9 @@ Polymer('ticker-tape', {
             this.pause();
             return undefined;
          }
-         span.innerHTML = term
+         span.innerHTML = term[0];
+         if (term.length > 1)
+            span.setAttribute('source', term[1]);
          placeholder.appendChild(span);
          return span;
       }.bind(this);

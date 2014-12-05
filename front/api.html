@@ -35,13 +35,21 @@
       </div>
       <div>
          <h1>Response<type>JSON</type></h1>
-         <description>A sequence of terms generated according to provided parameters. Every consecutive pair of terms in the generated list appears as a pair in some source text, and if a pair appears more often in the source text, it is more likely to appear in the generated term list.</description>
+         <description><em>generated</em> is a sequence of terms generated according to provided parameters. Every consecutive pair of terms in the generated list appears as a pair in some source text, and if a pair appears more often in the source text, it is more likely to appear in the generated term list. The local id corresponds to the source from which that term was drawn. If there's 1 local id, the term is in the middle of a sequential stretch. If there is no local id, the term is a pivot and can be assumed to belong to the sources of both predecessor and successor terms.</description>
+         <description><em>sources</em> is a temporary map from a local integer id to a source key, used to compress the generated list a bit.</description>
          <format><pre>
 {
    "generated": [
-      <placeholder>term</placeholder><type>(string)</type>,
+      [
+         <placeholder>term</placeholder><type>(string)</type>,
+         <placeholder>local id</placeholder><type>(integer)</type>
+      ]
+   ],
+
+   "sources": {
+      <placeholder>local id<type>(integer)</type></placeholder>: source key<type>(string)</type>,
       ...
-   ]
+   }
 }
          </pre></format>
       </div>

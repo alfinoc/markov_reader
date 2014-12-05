@@ -28,6 +28,10 @@ Polymer('text-generator', {
          value: [],
          reflect: true
       },
+      sequential: {
+         value: 5,
+         reflect: true
+      },
       requestParams: '{}'
    },
 
@@ -45,8 +49,12 @@ Polymer('text-generator', {
    handleNewBlock: function(e) {
       try {
          var terms = e.detail.response.generated;
+         var sourceKey = e.detail.response.sources;
          this.seed = terms[terms.length - 1];
          this.buffer.push.apply(this.buffer, terms);
+         for (var i = terms.length - 1; i >= 0; i--)
+            if (terms[i].length > 1)
+               terms[i][1] = sourceKey[terms[i][1]];
          this.loading = false;
          if (this.callback)
             this.callback();
@@ -70,9 +78,8 @@ Polymer('text-generator', {
    },
 
    fillBuffer: function() {
-      console.log(this.loading + ', buffer size: ' + this.buffer.length);
       if (!this.loading && this.buffer.length < this.minBufferSize) {
-         console.log('  firing ajax request');
+         console.log('  firing ajax request, buffer size: ' + this.buffer.length);
          this.loading = true;
          this.$.ajax.go();
       }
@@ -82,6 +89,7 @@ Polymer('text-generator', {
       this.requestParams = JSON.stringify({
          'sources': this.sources,
          'seed': this.seed,
+         'sequential': this.sequential,
          'length': '1000'
       })
    },

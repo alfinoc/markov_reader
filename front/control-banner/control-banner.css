@@ -1,7 +1,40 @@
-pause-icon, play-icon, circle-dot-icon {
+#multibutton, circle-dot-icon {
   height: 20px;
-  transition: fill 0.1s ease-in-out;
   width: 20px;
+  position: relative;
+}
+
+#multibutton:not([loading]) {
+  cursor: pointer;
+}
+
+/*
+  possible arrangements:
+    loading playing --> show spinner
+    loading         --> show spinner
+    playing         --> show pause button
+    *none*          --> show play
+*/
+#multibutton[loading] paper-spinner,
+#multibutton[playing]:not([loading]) pause-icon,
+#multibutton:not([playing]):not([loading]) play-icon {
+  opacity: 1;
+  z-index: 3;
+}
+
+#multibutton paper-spinner {
+  opacity: 0;
+}
+
+pause-icon, play-icon, paper-spinner {
+  opacity: 0;
+  z-index: 2;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  transition: fill 0.1s ease-in-out, opacity 0.1s ease-in-out;
 }
 
 pause-icon:hover, play-icon:hover {
@@ -16,6 +49,7 @@ circle-dot-icon:hover {
    letter-spacing: 2px;
    position: absolute;
    text-transform: uppercase;
+   z-index: 100;
 }
 
 .menu {

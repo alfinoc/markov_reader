@@ -16,5 +16,5 @@
   padding: 7px;
   top: 0px;
   width: 100vw;
-  z-index: 100;
+  z-index: -1;
 }

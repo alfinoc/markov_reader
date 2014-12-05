@@ -20,10 +20,13 @@
          }
       </style>
       <control-banner seed="{{ seed }}" selectedSources="{{ sources }}"
-                      on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}">
+                      on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}"
+                      playing="{{ playing }}" loading="{{ loading }}">
       </control-banner>
-      <ticker-tape id="tape" class="light">
-         <text-generator seed="{{ seed }}" sources="{{ sources }}"></text-generator>
+      <ticker-tape id="tape" class="light" paused="{{ !playing }}">
+         <text-generator seed="{{ seed }}" sources="{{ sources }}"
+                         loading="{{ loading }}">
+         </text-generator>
       </ticker-tape>
       <div id="bannercontainer">
          <template repeat="{{ sources }}">
@@ -39,11 +42,18 @@ Polymer('main-controller', {
          value: [],
          reflect: true
       },
+
       seed: {
          value: '',
          reflect: true
       },
+
       loading: {
+         value: false,
+         reflect: true
+      },
+
+      playing: {
          value: false,
          reflect: true
       },
