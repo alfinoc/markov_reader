@@ -40,3 +40,11 @@
 .suspendtransition {
   transition: none;
 }
+
+span:not([punctuation]):not(first-child)::before { 
+  content: ' ';
+}
+
+span[capitalize] {
+  text-transform: capitalize;
+}

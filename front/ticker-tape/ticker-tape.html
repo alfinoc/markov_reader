@@ -119,8 +119,9 @@ Polymer('ticker-tape', {
       } else {
          initialHeight = placeholder.clientHeight;
       }
+      var lastWasTerminator = true;
+      var lastSrc = '';
       var appendNextSpan = function() {
-         var span = document.createElement('span');
          var term = this.generator.next();
          // Propagate empty buffer case. Pause and wait until the text-generator
          // hits play again (on load).
@@ -128,9 +129,14 @@ Polymer('ticker-tape', {
             this.pause();
             return undefined;
          }
+         var span = document.createElement('span');
+         if (lastWasTerminator)
+            span.setAttribute('capitalize', '');
+         if ((lastWasTerminator = isTerminator(term[0])) || isBridge(term[0]))
+            span.setAttribute('punctuation', '');
+         span.setAttribute('source', term[1]);
+         lastSrc = term[1];
          span.innerHTML = term[0];
-         if (term.length > 1)
-            span.setAttribute('source', term[1]);
          placeholder.appendChild(span);
          return span;
       }.bind(this);
@@ -141,7 +147,8 @@ Polymer('ticker-tape', {
          // The buffer is empty :( Wait for the callback to be and try again.
          if (next == undefined)
             return;
-         placeholder.innerHTML += ' ';
+         //placeholder.innerHTML += ' ';
+         placeholder.appendChild(next);
       } while (placeholder.clientHeight == initialHeight);
       
       // Return the new line and clear the placeholder.

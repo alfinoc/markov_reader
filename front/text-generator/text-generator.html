@@ -53,9 +53,23 @@ Polymer('text-generator', {
          var sourceKey = e.detail.response.sources;
          this.seed = terms[terms.length - 1];
          this.buffer.push.apply(this.buffer, terms);
-         for (var i = terms.length - 1; i >= 0; i--)
+         for (var i = terms.length - 1; i >= 0; i--) {
             if (terms[i].length > 1)
                terms[i][1] = sourceKey[terms[i][1]];
+            else
+               terms[i].push('');
+         }
+         // Add in the correct source attribute for pivots, paying
+         // close attention to ordering.
+         for (var i = terms.length - 2; i > 0; i--) {
+            if (terms[i][1] == '') {
+               var before = terms[i - 1][1];
+               var after = terms[i + 1][1];
+               terms[i][1] = before;
+               if (before != after)
+                  terms[i][1] += ' ' + after;
+            }
+         }
          this.loading = false;
          if (this.callback)
             this.callback();
@@ -79,7 +93,6 @@ Polymer('text-generator', {
    },
 
    fillBuffer: function() {
-      
       if (!this.loading && this.buffer.length < this.minBufferSize) {
          console.log('attempt buffer fill');
          if (this.validRequest()) {
@@ -88,12 +101,11 @@ Polymer('text-generator', {
             this.$.ajax.go();
          }
       }
-      
    },
 
    updateRequest: function() {
       this.requestParams = JSON.stringify({
-         'sources': this.sources,
+         'sources': this.sources.join(','),
          'seed': this.seed,
          'sequential': this.sequential,
          'length': '1000'

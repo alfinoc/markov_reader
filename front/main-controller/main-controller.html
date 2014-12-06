@@ -29,8 +29,8 @@
          </text-generator>
       </ticker-tape>
       <div id="bannercontainer">
-         <template repeat="{{ sources }}">
-            <snippet-banner></snippet-banner>
+         <template repeat="{{ s in sources }}">
+            <snippet-banner source="{{ s }}"></snippet-banner>
          </template>
       </div>
    </template>
