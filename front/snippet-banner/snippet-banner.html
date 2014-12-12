@@ -1,29 +1,95 @@
 <link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../icons/icons.html">
 
 <polymer-element name="snippet-banner" horizontal layout class="banner">
    <template>
       <link rel="stylesheet" type="text/css" href="../control-banner/banner.css">
       <link rel="stylesheet" type="text/css" href="snippet-banner.css">
-      <div id="leftbutton">
-         <left-icon></left-icon>
-      </div>
-      <div class="left" flex>
-         a little to left
-      </div>
-      <span id="pivot">and</span>
-      <div class="right" flex>
-         a little to the right
-      </div>
-      <div id="rightbutton">
-         <right-icon></right-icon>
-      </div>
+      <core-ajax
+         id="ajax"
+         url="../../source"
+         params="{{ requestParams }}"
+         handleAs="json"
+         on-core-response="{{ handleResponse }}"
+         on-core-error="{{ onError }}"
+         loading="{{ loading }}"></core-ajax>
+      <template if="{{ left && pivot && right }}">
+         <div id="leftbutton">
+            <left-icon></left-icon>
+         </div>
+         <div class="left" flex> {{ left }} </div>
+         <span id="pivot">{{ pivot }}</span>
+         <div class="right" flex> {{ right }} </div>
+         <div id="rightbutton">
+            <right-icon></right-icon>
+         </div>
+      </template>
+      <template if="{{ !(left && pivot && right) }}">
+         <div> </div>
+      </template>
+      <paper-progress indeterminate hide?="{{ !loading }}"></paper-progress>
       <paper-shadow z="1"></paper-shadow>
    </template>
    <script>
 
-Polymer('snippet-banner', {});
+Polymer('snippet-banner', {
+   publish: {
+      position: '50',
+      source: {
+         value: '',
+         reflect: true
+      },
+
+      requestParams: '{}',
+      loading: false,
+
+      pivot: '',
+      left: '',
+      right: '',
+   },
+
+   observe: {
+      position: 'updateRequest',
+      source: 'updateRequest',
+      requestParams: 'updateRequest'
+   },
+
+   handleResponse: function(e) {
+      center = e.detail.response.actual
+      terms = e.detail.response.terms
+      this.pivot = terms[center]
+      this.left = terms.slice(0, center).join(' ');
+      this.right = terms.slice(center + 1).join(' ');
+   },
+
+   validRequest: function() {
+      if (!this.requestParams)
+         return false;
+      var req = JSON.parse(this.requestParams);
+      return req.position && req.radius && req.key;
+   },
+
+   updateRequest: function() {
+      this.requestParams = JSON.stringify({
+         'key': this.source,
+         'position': this.position,
+         'radius': 10,
+      })
+      if (this.validRequest())
+         this.$.ajax.go();
+   },
+
+   loadingChanged: function() {
+      console.log(this.loading);
+   },
+
+   onError: function(mesg) {
+      console.log(mesg)
+   }
+});
 
    </script>
 </polymer-element>

@@ -45,6 +45,25 @@ left-icon, right-icon {
   width: 20px;
 }
 
+paper-progress {
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+
+paper-progress[hide] {
+  display: none;
+}
+
+paper-progress::shadow #progressContainer {
+  background-color: transparent;
+}
+
+paper-progress::shadow #activeProgress {
+  background-color: white;
+}
+
 @-webkit-keyframes scootleft {
    from { margin-left: 0px; }
    to { margin-left: -3px; }
