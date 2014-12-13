@@ -34,7 +34,7 @@ class RedisWrapper:
    def source(self, key, start=0, end=-1):
       if end == -1:
          end = self.sourceLength(key)
-      return self.store.lrange(key + 'src', start, end)
+      return self.store.lrange(key + ':src', start, end)
 
    def sourceAtPosition(self, key, index):
       return self.store.lindex(key + ':src', index)

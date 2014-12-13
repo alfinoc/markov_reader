@@ -14,13 +14,15 @@ Polymer('ticker-tape', {
       playing: {
          value: false,
          reflect: true
-      }
+      },
+      secPerStep: 3
    },
 
    created: function() {
       this.topBufferSize = 150;
       this.bottomBufferSize = 150;
       this.lastLineHeight = 0;
+      this.interval = null;
    },
 
    domReady: function() {
@@ -30,16 +32,11 @@ Polymer('ticker-tape', {
       this.generator.callback = this.play.bind(this);
       //this.$.text.style.top = this.clientHeight / 2 + 'px';
       this.$.text.style.top = '0px';
-
-      // Set the scroll interval.
-      setInterval(this.periodicRefresh.bind(this), 5000);
       this.play();
    },
 
    periodicRefresh: function() {
-      if (!this.playing)
-         return;
-      this.pause();
+      this.pauseAnimation();
       this.refreshBuffer();
       this.scrollUpOneLine();
       this.resumeAnimation();
@@ -47,16 +44,26 @@ Polymer('ticker-tape', {
 
    pause: function() {
       this.playing = false;
+      if (this.interval != null) {
+         clearInterval(this.interval);
+         this.interval = null;
+      }
       this.$.text.classList.remove('animate');
    },
 
    play: function() {
+      this.playing = true;
       this.resumeAnimation();
+      if (this.interval == null)
+         this.interval = setInterval(this.periodicRefresh.bind(this), this.secPerStep * 1000);
       this.periodicRefresh();
    },
 
+   pauseAnimation: function() {
+      this.$.text.classList.remove('animate');
+   },
+
    resumeAnimation: function() {
-      this.playing = true;
       this.$.text.classList.add('animate');
    },
 

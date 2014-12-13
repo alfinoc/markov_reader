@@ -104,6 +104,33 @@ class GeneratorService(object):
       except:
          return BadRequest('Error retrieving term positions.')
 
+   def get_snippet(self, request):
+      if 'key' not in request.args:
+         return BadRequest('Required param: key.')
+      if 'position' not in request.args:
+         return BadRequest('Required param: position.')
+      if 'radius' not in request.args:
+         return BadRequest('Required param: radius.')
+
+      try:
+         key = request.args['key']
+         position = int(request.args['position'])
+         radius = int(request.args['radius'])
+      except:
+         return BadRequest('Malformed parameters.')
+
+      if not self.store.isIndexed(key):
+         return BadRequest('Source not found!')
+      srcLen = self.store.sourceLength(key)
+      if position < 0 or position >= srcLen:
+         return BadRequest('Position out of bounds.')
+
+      offset = radius - position if position - radius < 0 else 0
+      low = max(0, position - radius)
+      high = min(srcLen - 1, position + radius)
+      terms = map(self.store.term, self.store.source(key, low, high))
+      return Response(json.dumps({ 'terms': terms, 'actual': radius - offset }))
+
    """
    dispatch requests to appropriate functions above
    """
@@ -112,6 +139,7 @@ class GeneratorService(object):
          Rule('/generate', endpoint='text_block'),
          Rule('/meta', endpoint='meta_data'),
          Rule('/available', endpoint='source_list'),
+         Rule('/source', endpoint='snippet'),
          Rule('/<all>', redirect_to='play/api.html'),
 
       ])
