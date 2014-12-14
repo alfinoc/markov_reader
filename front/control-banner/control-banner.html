@@ -1,4 +1,3 @@
-<link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../icons/icons.html">
@@ -7,33 +6,29 @@
    <template>
       <link rel="stylesheet" type="text/css" href="banner.css">
       <link rel="stylesheet" type="text/css" href="control-banner.css">
-      <div horizontal layout class="banner">
-         <a href="../api.html">
-            <circle-dot-icon></circle-dot-icon>
-         </a>
-         <div flex></div>
-         <div class="textbutton" on-click="{{ toggleSourceMenu }}">Sources</div>
-         <div flex></div>
-         <div class="textbutton">Seed</div>
-         <div flex></div>
-         <div class="textbutton">Frequency</div>
-         <div flex></div>
-         <div id="multibutton" loading?="{{ loading }}" playing?="{{ playing }}">
-            <pause-icon on-click="{{ pause }}"></pause-icon>
-            <play-icon on-click="{{ play }}"></play-icon>
-            <paper-spinner active></paper-spinner>
+         <div  horizontal layout class="banner">
+            <a href="../api.html"><circle-dot-icon></circle-dot-icon></a>
+            <div flex></div>
+            <div class="textbutton" on-click="{{ toggleSourceMenu }}">Sources</div>
+            <div flex></div>
+            <div class="textbutton">Seed</div>
+            <div flex></div>
+            <div class="textbutton">Frequency</div>
+            <div flex></div>
+            <div id="multibutton" loading?="{{ loading }}" playing?="{{ playing }}">
+               <pause-icon on-click="{{ pause }}"></pause-icon>
+               <play-icon on-click="{{ play }}"></play-icon>
+               <paper-spinner active></paper-spinner>
+            </div>
          </div>
-         <paper-shadow z="1"></paper-shadow>
-      </div>
-      <div id="sources" class="banner menu">
-         <paper-radio-group horizontal layout multi selected="{{ selectedSources }}">
-            <template repeat="{{ s in sources | dictToList }}">
-               <paper-radio-button flex toggles name="{{ s.value }}" label="{{ s.key }}">
-               </paper-radio-button>
-            </template>
-         </paper-radio-group>
-         <paper-shadow z="1"></paper-shadow>
-      </div>
+         <div id="sources" class="banner menu">
+            <paper-radio-group horizontal layout multi selected="{{ selectedSources }}">
+               <template repeat="{{ s in sources | dictToList }}">
+                  <paper-radio-button flex toggles name="{{ s.value }}" label="{{ s.key }}">
+                  </paper-radio-button>
+               </template>
+            </paper-radio-group>
+         </div>
    </template>
    <script>
 

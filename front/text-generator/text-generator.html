@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 
 <polymer-element name="text-generator">
@@ -9,6 +10,10 @@
          handleAs="json"
          on-core-response="{{ handleNewBlock }}"
          on-core-error="{{ onError }}"></core-ajax>
+      <paper-toast duration="100000" id="nosource" text="Select at least one source!"
+                   class="dark"></paper-toast>
+      <paper-toast id="ajaxerror" text="Server error, my bad! Maybe try some other time?"
+                   class="dark"></paper-toast>
    </template>
    <script>
 
@@ -99,6 +104,8 @@ Polymer('text-generator', {
             console.log('  firing ajax request, buffer size: ' + this.buffer.length);
             this.loading = true;
             this.$.ajax.go();
+         } else {
+            this.$.nosource.show();
          }
       }
    },
@@ -121,6 +128,7 @@ Polymer('text-generator', {
 
    onError: function(err) {
       this.loading = false;
+      this.$.ajaxerror.show();
       console.log(err);
    }
 });

@@ -91,7 +91,6 @@ class GeneratorService(object):
       if 'terms' not in request.args:
          return BadRequest('Required param: terms.')
       try:
-         #terms = json.loads(request.args['terms'])['terms']
          terms = filter(lambda s : len(s) > 0, request.args['terms'].split(','))
       except:
          return BadRequest('Malformed JSON term list.')

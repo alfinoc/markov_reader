@@ -66,3 +66,15 @@ textarea, input {
       color-stop(0, rgba(199, 86, 70, 0.3)), color-stop(1, rgba(33, 134, 147, 0.3))) 100% 0;
    border-bottom-width: 2px;
 }
+
+* /deep/ paper-toast {
+   min-height: 0px;
+   min-width: 0px;
+   padding: 7px;
+   bottom: 7px;
+   left: 7px;
+}
+
+* /deep/ paper-toast::shadow .toast-action {
+   display: none;
+}
