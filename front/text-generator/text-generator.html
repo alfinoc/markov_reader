@@ -10,9 +10,9 @@
          handleAs="json"
          on-core-response="{{ handleNewBlock }}"
          on-core-error="{{ onError }}"></core-ajax>
-      <paper-toast duration="100000" id="nosource" text="Select at least one source!"
+      <paper-toast id="nosource" text="Select at least one source!"
                    class="dark"></paper-toast>
-      <paper-toast id="ajaxerror" text="Server error, my bad! Maybe try some other time?"
+      <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
                    class="dark"></paper-toast>
    </template>
    <script>

@@ -34,10 +34,13 @@
   text-transform: initial;
 }
 
-:host {
+#wrapper {
   color: white;
   padding: 5px;
   position: initial;
+  width: 100%;
+  background-color: inherit;
+  box-sizing: border-box;
 }
 
 left-icon, right-icon {

@@ -122,11 +122,11 @@
       </div>
       <div>
          <h1>Response<type>JSON</type></h1>
-         <description>A sequence of terms indexed
+         <description>The sequence of <em>terms</em> indexed
          <format><pre>
 [position - radius, ..., position + radius]
          </pre></format>
-         inclusive on both boundaries. If <em>position</em> &plusmn; <em>radius</em> is out of the bounds of the source, the snippet is truncated to these bounds. For this reason <em>index</em> is the actual index of the term at the requested position within the snippet.</description>
+         inclusive on both boundaries. If <em>position</em> &plusmn; <em>radius</em> is out of the bounds of the source, the snippet is truncated to these bounds. For this reason we include <em>actual</em>, the index of the source position in the snippet.</description>
          <format><pre>
 {
    "terms": [

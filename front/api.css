@@ -4,7 +4,6 @@
   width: 700px;
 }
 
-
 @media (max-width: 800px){
   body {
     font-style: italic;
@@ -21,6 +20,11 @@ description {
 
 description, format, url {
   display: block;
+}
+
+em {
+  font-weight: normal;
+  font-style: normal;
 }
 
 end-point {

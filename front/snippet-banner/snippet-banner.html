@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../icons/icons.html">
 
-<polymer-element name="snippet-banner" horizontal layout class="banner">
+<polymer-element name="snippet-banner" class="banner">
    <template>
       <link rel="stylesheet" type="text/css" href="../control-banner/banner.css">
       <link rel="stylesheet" type="text/css" href="snippet-banner.css">
@@ -16,22 +16,23 @@
          on-core-response="{{ handleResponse }}"
          on-core-error="{{ onError }}"
          loading="{{ loading }}"></core-ajax>
-      <template if="{{ left && pivot && right }}">
-         <div id="leftbutton">
-            <left-icon></left-icon>
+         <div id="wrapper" horizontal layout>
+            <template if="{{ left && pivot && right }}">
+               <div id="leftbutton">
+                  <left-icon></left-icon>
+               </div>
+               <div class="left" flex> {{ left }} </div>
+               <span id="pivot">{{ pivot }}</span>
+               <div class="right" flex> {{ right }} </div>
+               <div id="rightbutton">
+                  <right-icon></right-icon>
+               </div>
+            </template>
          </div>
-         <div class="left" flex> {{ left }} </div>
-         <span id="pivot">{{ pivot }}</span>
-         <div class="right" flex> {{ right }} </div>
-         <div id="rightbutton">
-            <right-icon></right-icon>
-         </div>
-      </template>
-      <template if="{{ !(left && pivot && right) }}">
-         <div> </div>
-      </template>
       <paper-progress indeterminate hide?="{{ !loading }}"></paper-progress>
       <paper-shadow z="1"></paper-shadow>
+      <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
+                   class="dark"></paper-toast>
    </template>
    <script>
 
@@ -80,10 +81,6 @@ Polymer('snippet-banner', {
       })
       if (this.validRequest())
          this.$.ajax.go();
-   },
-
-   loadingChanged: function() {
-      console.log(this.loading);
    },
 
    onError: function(mesg) {

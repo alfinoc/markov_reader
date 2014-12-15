@@ -3,7 +3,7 @@
 <polymer-element name="ticker-tape">
    <template>
       <link rel="stylesheet" type="text/css" href="ticker-tape.css">
-      <div id="text">
+      <div id="text" on-click="{{ selectTerm }}">
          <div id="placeholder"></div>
       </div>
       <content></content>
@@ -12,6 +12,10 @@
 
 Polymer('ticker-tape', {
    publish: {
+      selectedTerm: {
+         value: null,
+         reflect: true
+      },
       playing: {
          value: false,
          reflect: true
@@ -31,9 +35,7 @@ Polymer('ticker-tape', {
       this.pause();
       this.generator = this.querySelector('text-generator');
       this.generator.callback = this.play.bind(this);
-      //this.$.text.style.top = this.clientHeight / 2 + 'px';
       this.$.text.style.top = '0px';
-      this.play();
    },
 
    periodicRefresh: function() {
@@ -169,6 +171,15 @@ Polymer('ticker-tape', {
 
    viewHeight: function() {
       return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+   },
+
+   selectTerm: function(e) {
+      this.$.text.querySelectorAll('span[selected]').array().forEach(function(elt) {
+         elt.removeAttribute('selected');
+      });
+
+      e.target.setAttribute('selected', '');
+      this.selectedTerm = e.target.innerHTML.trim();
    }
 });
 

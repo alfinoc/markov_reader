@@ -3,6 +3,7 @@
 }
 
 #text {
+  cursor: default;
   position: absolute;
   top: 0px;
   width: 100vw;
@@ -47,4 +48,9 @@ span:not([punctuation]):not(first-child)::before {
 
 span[capitalize] {
   text-transform: capitalize;
+}
+
+span[selected] {
+  text-shadow: 2px 2px 2px #BBB;
+  color: black;
 }

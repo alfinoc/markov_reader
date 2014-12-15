@@ -23,14 +23,15 @@
                       on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}"
                       playing="{{ playing }}" loading="{{ loading }}">
       </control-banner>
-      <ticker-tape id="tape" class="light" playing="{{ playing }}">
-         <text-generator seed="{{ seed }}" sources="{{ sources }}"
-                         loading="{{ loading }}">
+      <ticker-tape id="tape" class="light" playing="{{ playing }}" selectedTerm="{{ selectedTerm }}">
+         <text-generator seed="{{ seed }}" sources="{{ sources }}" loading="{{ loading }}">
          </text-generator>
       </ticker-tape>
       <div id="bannercontainer">
-         <template repeat="{{ s in sources }}">
-            <snippet-banner source="{{ s }}"></snippet-banner>
+         <template if="{{ selectedTerm }}">
+            <template repeat="{{ s in sources }}">
+               <snippet-banner source="{{ s }}" pivot="{{ selectedTerm }}"></snippet-banner>
+            </template>
          </template>
       </div>
    </template>
@@ -55,6 +56,11 @@ Polymer('main-controller', {
 
       playing: {
          value: false,
+         reflect: true
+      },
+
+      selectedTerm: {
+         value: 'tits',
          reflect: true
       },
 
