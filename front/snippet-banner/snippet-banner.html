@@ -4,7 +4,7 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../icons/icons.html">
 
-<polymer-element name="snippet-banner" class="banner">
+<polymer-element name="snippet-banner">
    <template>
       <link rel="stylesheet" type="text/css" href="../control-banner/banner.css">
       <link rel="stylesheet" type="text/css" href="snippet-banner.css">
@@ -84,9 +84,9 @@ Polymer('snippet-banner', {
    },
 
    onError: function(mesg) {
-      console.log(mesg)
+      this.$.ajaxerror.show();
+      console.log(mesg);
    }
 });
-
    </script>
 </polymer-element>

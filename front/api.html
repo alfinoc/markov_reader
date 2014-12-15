@@ -75,28 +75,22 @@
             <li>
                <parameter>terms<type>string list (comma-separated) required</type></parameter>
                <description>A list of terms for which to receive metadata.</description>
-               <format><pre>
-{
-   "terms": [
-      <placeholder>term</placeholder><type>(string)</type>,
-      ...
-   ]
-}
-               </pre></format>
             </li>
          </ul>
       </div>
       <div>
          <h1>Response<type>JSON</type></h1>
-         <description>A map from string term to a dictionary of data about that term.</description>
+         <description>A map from string term to a dictionary of information about that term.</description>
          <format><pre>
 {
-   "positions": {
-      <placeholder>source key</placeholder>: [
-         <placeholder>position</placeholder><type>(integer)</type>,
+   <placeholder>term</placeholder>: {
+      "positions": {
+         <placeholder>source key</placeholder>: [
+            <placeholder>position</placeholder><type>(integer)</type>,
+            ...
+         ],
          ...
-      ],
-      ...
+      }
    }
 }
          </pre></format>

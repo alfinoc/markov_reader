@@ -1,0 +1,63 @@
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
+<polymer-element name="position-cache">
+   <template>
+      <core-ajax id="ajax" url="../../meta" handleAs="json" loading="{{ loading }}"
+                 on-core-response="{{ handleResponse }}" on-core-error="{{ onError }}"></core-ajax>
+      <paper-toast id="ajaxerror" text="Uh oh, that's a server error." class="dark"></paper-toast>
+   </template>
+   <script>
+
+Polymer('position-cache', {
+   publish: {
+      loading: {
+         value: false,
+         reflect: true
+      }
+   },
+
+   created: function() {
+      this.waiting = {};
+   },
+
+   getPositions: function(src, term, callback) {
+      var prev = window.positionCache_get(src, term);
+      if (prev) {
+         // Fast path: callback immediately.
+         callback(prev);
+      } else {
+         // Slow path: record the waiter and make the ajax request.
+         if (!(src in this.waiting))
+            this.waiting[src] = {};
+         this.waiting[src][term] = callback;
+         this.$.ajax.params = '{"terms": "' + term + '" }';
+         this.$.ajax.go();
+      }
+   },
+
+   callWaiters: function() {
+      for (src in this.waiting) {
+         for (term in this.waiting[src]) {
+            var res = window.positionCache_get(src, term);
+            if (res) this.waiting[src][term](res);
+         }
+      }
+   },
+
+   handleResponse: function(e) {
+      for (term in e.detail.response) {
+         srcToList = e.detail.response[term]['positions']
+         for (src in srcToList) {
+            window.positionCache_set(src, term, JSON.parse(srcToList[src]));
+         }
+      }
+      this.callWaiters();
+   },
+
+   onError: function(mesg) {
+      this.$.ajaxerror.show();
+      console.log(mesg);
+   },
+});
+   </script>
+</polymer-element>

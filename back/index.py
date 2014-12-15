@@ -16,7 +16,7 @@ t_EN_DASH  = r'--'
 t_EM_DASH  = r'---'
 t_ELLIPSIS = r'\.\.\.'
 t_WORD     = r'\w+-\w+|\w+\'\w+|\w+'  # Allow all words, contractions, and dashed words.
-t_ignore  = ' \t\n()[]"*-\''
+t_ignore  = ' \t\n()[]"*-\'_'
 
 # Locate the leftmost value in 'a' exactly equal to 'x'
 def index(a, x):
