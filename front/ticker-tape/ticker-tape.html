@@ -177,9 +177,10 @@ Polymer('ticker-tape', {
       this.$.text.querySelectorAll('span[selected]').array().forEach(function(elt) {
          elt.removeAttribute('selected');
       });
-
-      e.target.setAttribute('selected', '');
-      this.selectedTerm = e.target.innerHTML.trim();
+      if (e.target.tagName == 'SPAN') {
+         e.target.setAttribute('selected', '');
+         this.selectedTerm = e.target.innerHTML.trim();
+      }
    }
 });
 

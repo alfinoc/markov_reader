@@ -116,6 +116,8 @@ Polymer('snippet-banner', {
       this.pivot = terms[center];
       this.left = terms.slice(0, center).join(' ');
       this.right = terms.slice(center + 1).join(' ');
+
+      // Log the newly acquired snippet in the cache.
       this.snippetCache[this.positionIndex] = {
          pivot: this.pivot, left: this.left, right: this.right
       }
