@@ -96,6 +96,7 @@ class MultiReader:
       for i in range(len(self.readers)):
          try:
             self.__getCurrentReader().seed(start)
+            #self.last = start
             return
          except ValueError:
             self.__progressCurrentReader()
@@ -151,6 +152,9 @@ def generateBlock(seed, length, sequential, reader, store):
    for i in range(1, length + 1):
       if i % sequential == 0:
          # attempt a jump!
+         # TODO: make it so this uses the correct interface. the issue is that
+         # 'last' doesn't stay consistent after sequential next()s.
+         reader.last = generatedList[len(generatedList) - 1][0];
          reader.switchIndex()
          generatedList.append([reader.next()])
          # avoid the position lookups if we're jumping on every term
