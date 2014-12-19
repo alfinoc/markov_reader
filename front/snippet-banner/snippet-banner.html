@@ -52,7 +52,7 @@ Polymer('snippet-banner', {
    },
 
    observe: {
-      positionIndex: 'updateRequest',
+      positionIndex: 'loadSnippet',
       source: 'updateRequest',
       requestParams: 'updateRequest'
    },
@@ -60,7 +60,7 @@ Polymer('snippet-banner', {
    created: function() {
       this.positions = [];
       this.positionIndex = 0;
-      this.snippetCache;
+      this.snippetCache = {};
    },
 
    increment: function() {
@@ -71,6 +71,20 @@ Polymer('snippet-banner', {
    decrement: function() {
       this.positionIndex--;
       this.capPositionIndex();
+   },
+
+   loadSnippet: function() {
+      // Cache hit.
+      var entry = this.snippetCache[this.positionIndex];
+      if (entry) {
+         this.pivot = entry.pivot;
+         this.left = entry.left;
+         this.right = entry.right;
+
+      // Cache miss -- fire the AJAX.
+      } else {
+         this.updateRequest();
+      }
    },
 
    capPositionIndex: function() {
@@ -92,6 +106,7 @@ Polymer('snippet-banner', {
 
    positionsChanged: function() {
       this.positionIndex = 0;
+      this.snippetCache = {};
       this.updateRequest();
    },
 
@@ -101,6 +116,9 @@ Polymer('snippet-banner', {
       this.pivot = terms[center];
       this.left = terms.slice(0, center).join(' ');
       this.right = terms.slice(center + 1).join(' ');
+      this.snippetCache[this.positionIndex] = {
+         pivot: this.pivot, left: this.left, right: this.right
+      }
    },
 
    validRequest: function() {
