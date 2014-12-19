@@ -105,9 +105,14 @@ Polymer('snippet-banner', {
    },
 
    positionsChanged: function() {
-      this.positionIndex = 0;
-      this.snippetCache = {};
-      this.updateRequest();
+      if (!this.positions || this.positions.length == 0) {
+         // TODO: this should clear or something.
+         //this.pivot = this.left = this.right = '';
+      } else {
+         this.positionIndex = 0;
+         this.snippetCache = {};
+         this.updateRequest();
+      }
    },
 
    handleResponse: function(e) {

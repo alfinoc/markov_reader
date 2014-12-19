@@ -97,8 +97,14 @@ class GeneratorService(object):
       try:
          ids = map(self.store.id, terms)
          resp = {}
+         allSrcs = self.store.stored();
          for i in range(len(ids)):
-            resp[terms[i]] = { 'positions': self.store.allPositions(ids[i]) }
+            positions = self.store.allPositions(ids[i])
+            for src in allSrcs:
+               if not src in positions:
+                  positions[src] = '[]'
+            resp[terms[i]] = { 'positions': positions }
+         
          return Response(json.dumps(resp))
       except:
          return BadRequest('Error retrieving term positions.')
