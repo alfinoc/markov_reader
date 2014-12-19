@@ -38,7 +38,6 @@
 
 Polymer('snippet-banner', {
    publish: {
-      position: '50',
       source: {
          value: '',
          reflect: true
@@ -53,14 +52,35 @@ Polymer('snippet-banner', {
    },
 
    observe: {
-      position: 'updateRequest',
+      positionIndex: 'updateRequest',
       source: 'updateRequest',
       requestParams: 'updateRequest'
    },
 
+   created: function() {
+      this.positions = [];
+      this.positionIndex = 0;
+   },
+
+   pivotChanged: function() {
+      if (this.source && this.pivot) {
+         var posQuery = document.querySelector('position-cache');
+         if (posQuery) {
+            posQuery.getPositions(this.source, this.pivot, function(positions) {
+               this.positions = positions;
+            }.bind(this));
+         }
+      }
+   },
+
+   positionsChanged: function() {
+      this.positionIndex = 0;
+      this.updateRequest();
+   },
+
    handleResponse: function(e) {
-      center = e.detail.response.actual
-      terms = e.detail.response.terms
+      var center = e.detail.response.actual;
+      var terms = e.detail.response.terms;
       this.pivot = terms[center]
       this.left = terms.slice(0, center).join(' ');
       this.right = terms.slice(center + 1).join(' ');
@@ -70,15 +90,18 @@ Polymer('snippet-banner', {
       if (!this.requestParams)
          return false;
       var req = JSON.parse(this.requestParams);
-      return req.position && req.radius && req.key;
+      return req.radius && req.key && req.position >= 0;
    },
 
    updateRequest: function() {
+      var moddedIndex = this.positionIndex % this.positions.length;
+      if (moddedIndex < 0)
+         moddedIndex += this.position.length;
       this.requestParams = JSON.stringify({
          'key': this.source,
-         'position': this.position,
+         'position': this.positions[this.positionIndex],
          'radius': 10,
-      })
+      });
       if (this.validRequest())
          this.$.ajax.go();
    },
