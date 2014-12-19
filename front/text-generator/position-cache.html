@@ -17,6 +17,7 @@ Polymer('position-cache', {
    },
 
    created: function() {
+      // {term -> {src -> callback list}}
       this.waiting = {};
    },
 
@@ -27,20 +28,30 @@ Polymer('position-cache', {
          callback(prev);
       } else {
          // Slow path: record the waiter and make the ajax request.
-         if (!(src in this.waiting))
-            this.waiting[src] = {};
-         this.waiting[src][term] = callback;
-         this.$.ajax.params = '{"terms": "' + term + '" }';
-         this.$.ajax.go();
+         var alreadyRequested = this.waiting[term];
+         if (!this.waiting[term])
+            this.waiting[term] = {};
+         if (!this.waiting[term][src])
+            this.waiting[term][src] = [];
+         this.waiting[term][src].push(callback);
+         if (!alreadyRequested) {
+            this.$.ajax.params = '{"terms": "' + term + '" }';
+            this.$.ajax.go();
+         }
       }
    },
 
    callWaiters: function() {
-      for (src in this.waiting) {
-         for (term in this.waiting[src]) {
+      for (term in this.waiting) {
+         for (src in this.waiting[term]) {
             var res = window.positionCache_get(src, term);
-            if (res) this.waiting[src][term](res);
+            if (res) {
+               while (this.waiting[term][src].length > 0) {
+                  this.waiting[term][src].pop()(res);
+               }
+            }
          }
+         delete this.waiting[term];
       }
    },
 

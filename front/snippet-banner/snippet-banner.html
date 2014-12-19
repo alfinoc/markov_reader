@@ -18,13 +18,13 @@
          loading="{{ loading }}"></core-ajax>
          <div id="wrapper" horizontal layout>
             <template if="{{ left && pivot && right }}">
-               <div id="leftbutton">
+               <div id="leftbutton" on-click="{{ decrement }}">
                   <left-icon></left-icon>
                </div>
                <div class="left" flex> {{ left }} </div>
                <span id="pivot">{{ pivot }}</span>
                <div class="right" flex> {{ right }} </div>
-               <div id="rightbutton">
+               <div id="rightbutton" on-click="{{ increment }}">
                   <right-icon></right-icon>
                </div>
             </template>
@@ -60,6 +60,23 @@ Polymer('snippet-banner', {
    created: function() {
       this.positions = [];
       this.positionIndex = 0;
+      this.snippetCache;
+   },
+
+   increment: function() {
+      this.positionIndex++;
+      this.capPositionIndex();
+   },
+
+   decrement: function() {
+      this.positionIndex--;
+      this.capPositionIndex();
+   },
+
+   capPositionIndex: function() {
+      this.positionIndex %= this.positions.length;
+      if (this.positionIndex < 0)
+         this.positionIndex += this.positions.length;
    },
 
    pivotChanged: function() {
@@ -81,7 +98,7 @@ Polymer('snippet-banner', {
    handleResponse: function(e) {
       var center = e.detail.response.actual;
       var terms = e.detail.response.terms;
-      this.pivot = terms[center]
+      this.pivot = terms[center];
       this.left = terms.slice(0, center).join(' ');
       this.right = terms.slice(center + 1).join(' ');
    },
@@ -94,9 +111,6 @@ Polymer('snippet-banner', {
    },
 
    updateRequest: function() {
-      var moddedIndex = this.positionIndex % this.positions.length;
-      if (moddedIndex < 0)
-         moddedIndex += this.position.length;
       this.requestParams = JSON.stringify({
          'key': this.source,
          'position': this.positions[this.positionIndex],
