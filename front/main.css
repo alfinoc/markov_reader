@@ -36,10 +36,12 @@ textarea, input {
 
 * /deep/ snippet-banner[source="wutheringheights.txt"] {
    background-color: rgb(199, 86, 70); /* #C75646 */
+   color: rgb(199, 86, 70);
 }
 
 * /deep/ snippet-banner[source="dracula.txt"] {
    background-color: rgb(33, 134, 147); /* #218693 */
+   color: rgb(33, 134, 147);
 }
 
 * /deep/ #text span {

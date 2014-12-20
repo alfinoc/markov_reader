@@ -1,10 +1,13 @@
 #leftbutton, #rightbutton {
   cursor: pointer;
   width: 30px;
+  box-shadow: 0px 0px 40px 20px;
+  color: inherit;
 }
 
 #leftbutton, #rightbutton, left-icon, right-icon {
   height: 20px;
+  z-index: 1;
 }
 
 #leftbutton, .right {
@@ -32,15 +35,35 @@
 .left, .right {
   letter-spacing: normal;
   text-transform: initial;
+  position: relative;
+  overflow: hidden;
+}
+
+.left > div {
+  right: 0px;
+}
+
+.right > div {
+  left: 0px;
+}
+
+.left > div, .right > div {
+  position: absolute;
+  top: 0px;
+  width: 1000px;
+}
+
+.left, .right, #pivot {
+  color: white;
 }
 
 #wrapper {
-  color: white;
   padding: 5px;
   position: initial;
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 0px;
+  overflow: hidden;
 }
 
 #wrapper, .collapseable {

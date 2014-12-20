@@ -22,9 +22,9 @@
                   <div id="leftbutton" on-click="{{ decrement }}">
                      <left-icon></left-icon>
                   </div>
-                  <div class="left" flex> {{ left }} </div>
+                  <div class="left" flex><div>{{ left }}</div></div>
                   <span id="pivot">{{ pivot }}</span>
-                  <div class="right" flex> {{ right }} </div>
+                  <div class="right" flex><div>{{ right }}</div></div>
                   <div id="rightbutton" on-click="{{ increment }}">
                      <right-icon></right-icon>
                   </div>
@@ -136,7 +136,7 @@ Polymer('snippet-banner', {
       this.requestParams = JSON.stringify({
          'key': this.source,
          'position': this.positions[this.positionIndex],
-         'radius': 10,
+         'radius': 30,
       });
       if (this.validRequest())
          this.$.ajax.go();
