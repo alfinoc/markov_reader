@@ -16,19 +16,21 @@
          on-core-response="{{ handleResponse }}"
          on-core-error="{{ onError }}"
          loading="{{ loading }}"></core-ajax>
-         <div id="wrapper" horizontal layout>
-            <template if="{{ left && pivot && right }}">
-               <div id="leftbutton" on-click="{{ decrement }}">
-                  <left-icon></left-icon>
+         <template if="{{ left && pivot && right }}">
+            <div class="collapseable" hide?="{{ !positions || positions.length == 0 }}">
+               <div id="wrapper" horizontal layout>
+                  <div id="leftbutton" on-click="{{ decrement }}">
+                     <left-icon></left-icon>
+                  </div>
+                  <div class="left" flex> {{ left }} </div>
+                  <span id="pivot">{{ pivot }}</span>
+                  <div class="right" flex> {{ right }} </div>
+                  <div id="rightbutton" on-click="{{ increment }}">
+                     <right-icon></right-icon>
+                  </div>
                </div>
-               <div class="left" flex> {{ left }} </div>
-               <span id="pivot">{{ pivot }}</span>
-               <div class="right" flex> {{ right }} </div>
-               <div id="rightbutton" on-click="{{ increment }}">
-                  <right-icon></right-icon>
-               </div>
-            </template>
-         </div>
+            </div>
+         </template>
       <paper-progress indeterminate hide?="{{ !loading }}"></paper-progress>
       <paper-shadow z="1"></paper-shadow>
       <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
@@ -105,14 +107,9 @@ Polymer('snippet-banner', {
    },
 
    positionsChanged: function() {
-      if (!this.positions || this.positions.length == 0) {
-         // TODO: this should clear or something.
-         //this.pivot = this.left = this.right = '';
-      } else {
-         this.positionIndex = 0;
-         this.snippetCache = {};
-         this.updateRequest();
-      }
+      this.positionIndex = 0;
+      this.snippetCache = {};
+      this.updateRequest();
    },
 
    handleResponse: function(e) {
