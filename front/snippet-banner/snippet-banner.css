@@ -52,8 +52,13 @@
   white-space: nowrap;
 }
 
-.left, .right, #pivot {
+.left, .right, #pivot, .empty {
   color: white;
+}
+
+.empty {
+  font-style: italic;
+  text-align: center;
 }
 
 #wrapper {
@@ -63,21 +68,7 @@
   box-sizing: border-box;
   margin-bottom: 0px;
   overflow: hidden;
-}
-
-#wrapper, .collapseable {
   background-color: inherit;
-}
-
-.collapseable {
-  max-height: 50px;
-  transition: opacity ease-in-out 0.1s, max-height ease-in-out 0.1s;
-  opacity: 1;
-}
-
-.collapseable[hide] {
-  max-height: 0px;
-  opacity: 0;
 }
 
 left-icon, right-icon {

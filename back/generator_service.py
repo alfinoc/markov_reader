@@ -6,7 +6,7 @@ import json
 from persistent import RedisWrapper
 from reader import MultiReader
 from index import SerialIndex, invertedMap
-from generator import generateBlock, serializeProto
+from generator import generateBlock, serializeProto, getProto
 from formatter import capitalize, condensePunctuation, spaces, encodeSourceKeys
 
 """
@@ -121,7 +121,18 @@ class GeneratorService(object):
       low = max(0, position - radius)
       high = min(srcLen - 1, position + radius)
       terms = map(self.store.term, self.store.source(key, low, high))
-      return Response(json.dumps({ 'terms': terms, 'actual': radius - offset }))
+      left = terms[: radius - offset]
+      right = terms[radius - offset + 1:]
+
+      # The formatter works with protos, so throw in dummy ones.
+      def quickFormat(sequence):
+         protoList = map(lambda term : getProto(term, '', ''), sequence)
+         capitalize(protoList)
+         condensePunctuation(protoList)
+         spaces(protoList)
+         return ''.join(map(lambda proto : proto['term'], protoList))
+      #return Response(json.dumps({ 'terms': terms, 'actual': radius - offset }))
+      return Response(json.dumps({ 'left': quickFormat(left), 'right': quickFormat(right)}))
 
    """
    dispatch requests to appropriate functions above

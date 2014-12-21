@@ -11,29 +11,30 @@
       <core-ajax id="ajax" url="../../source" params="{{ requestParams }}"
                  handleAs="json" on-core-response="{{ handleResponse }}"
                  on-core-error="{{ onError }}" loading="{{ loading }}"></core-ajax>
-         <template if="{{ left && pivot && right }}">
-            <div class="collapseable" hide?="{{ !positions || positions.length == 0 }}">
-               <div id="wrapper" horizontal layout>
-                  <template if="{{ positions.length > 1 }}">
-                     <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
-                        <left-icon></left-icon>
-                     </div>
-                  </template>
-                  <div class="left" flex><div>{{ left }}</div></div>
-                  <span id="pivot">{{ pivot }}</span>
-                  <div class="right" flex><div>{{ right }}</div></div>
-                  <template if="{{ positions.length > 1 }}">
-                     <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
-                        <right-icon></right-icon>
-                     </div>
-                  </template>
-               </div>
-            </div>
+      
+      <div id="wrapper" horizontal layout>
+         <template if="{{ !positions || positions.length == 0 }}">
+            <div class="empty" flex>no occurrences</div>
          </template>
+         <template if="{{ positions.length > 0 && left && pivot && right }}">
+            <template if="{{ positions.length > 1 }}">
+               <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
+                  <left-icon></left-icon>
+               </div>
+            </template>
+            <div class="left" flex><div>{{ left }}</div></div>
+            <span id="pivot">{{ pivot }}</span>
+            <div class="right" flex><div>{{ right }}</div></div>
+            <template if="{{ positions.length > 1 }}">
+               <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
+                  <right-icon></right-icon>
+               </div>
+            </template>
+         </template>
+      </div>
       <paper-progress indeterminate hide?="{{ !loading }}"></paper-progress>
       <paper-shadow z="1"></paper-shadow>
-      <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
-                   class="dark"></paper-toast>
+      <paper-toast id="ajaxerror" text="Uh oh, that's a server error." class="dark"></paper-toast>
    </template>
    <script>
 
@@ -100,6 +101,7 @@ Polymer('snippet-banner', {
          if (posQuery) {
             posQuery.getPositions(this.source, this.pivot, function(positions) {
                this.positions = positions;
+               this.left = this.right = '';
             }.bind(this));
          }
       }
@@ -112,11 +114,8 @@ Polymer('snippet-banner', {
    },
 
    handleResponse: function(e) {
-      var center = e.detail.response.actual;
-      var terms = e.detail.response.terms;
-      this.pivot = terms[center];
-      this.left = terms.slice(0, center).join(' ');
-      this.right = terms.slice(center + 1).join(' ');
+      this.left = e.detail.response.left;
+      this.right = e.detail.response.right;
 
       // Log the newly acquired snippet in the cache.
       this.snippetCache[this.positionIndex] = {

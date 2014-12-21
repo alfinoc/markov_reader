@@ -116,19 +116,15 @@
       </div>
       <div>
          <h1>Response<type>JSON</type></h1>
-         <description>The sequence of <em>terms</em> indexed
+         <description>The two sequences of terms returned are indexed
          <format><pre>
 [position - radius, ..., position + radius]
          </pre></format>
-         inclusive on both boundaries. If <em>position</em> &plusmn; <em>radius</em> is out of the bounds of the source, the snippet is truncated to these bounds. For this reason we include <em>actual</em>, the index of the source position in the snippet.</description>
+         inclusive on both boundaries. If <em>position</em> &plusmn; <em>radius</em> is out of the bounds of the source, the snippet is truncated to these bounds. <em>left</em> and <em>right</em> are formatted and joined sequences in the above range. The term at <em>position</em> itself is not included.</description>
          <format><pre>
 {
-   "terms": [
-      <placeholder>term</placeholder><type>(string)</type>,
-      ...
-   ],
-
-   "actual": <placeholder>index</placeholder><type>(integer)</type>
+   "left": <placeholder>excerpt</placeholder><type>(string)</type>,
+   "right": <placeholder>excerpt</placeholder><type>(string)</type>
 }
          </pre></format>
       </div>
