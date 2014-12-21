@@ -2,8 +2,9 @@ from bisect import bisect_left
 from ply.lex import lex
 
 # Lexer rules
-terminators = '.?,!:;'
-literals = terminators + '/='
+terminators = '.?!'
+noLeftSpace = terminators + ',:;'
+literals = noLeftSpace + '/='
 tokens = (
    'AMP',
    'EN_DASH',

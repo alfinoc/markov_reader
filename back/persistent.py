@@ -1,3 +1,4 @@
+from bisect import bisect_left
 import redis
 
 HOST = 'localhost'
@@ -74,3 +75,15 @@ class RedisWrapper:
 
    def setSuccessorCount(self, filename, first, second, count):
       self.store.hset('{0}:{1}:succ'.format(first, filename), second, count)
+
+"""
+An in-memory English dictionary loaded directly from a file
+containing one word per line.
+"""
+class Dictionary:
+   def __init__(self, filename):
+      self.dict = set()
+      f = open(filename)
+      for line in f:
+         self.dict.add(line.strip())
+      self.__contains__ = self.dict.__contains__

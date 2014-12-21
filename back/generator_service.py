@@ -4,24 +4,16 @@ from werkzeug.exceptions import HTTPException, BadRequest
 import json
 
 from persistent import RedisWrapper
-from reader import MultiReader, generateBlock
+from reader import MultiReader
 from index import SerialIndex, invertedMap
+from generator import generateBlock, serializeProto
+from formatter import capitalize, condensePunctuation, spaces, encodeSourceKeys
 
 """
 returns the value in 'dict' for 'key', or 'default' if there is none.
 """
 def defaultValue(dict, key, default):
    return dict[key] if key in dict else default
-
-"""
-returns a new map where each (key, value) pair is a (value, key) pair in
-provided dict. assumes the map is invertible (bijective)
-"""
-def invert(dict):
-   res = {}
-   for k in dict:
-      res[dict[k]] = k
-   return res
 
 class GeneratorService(object):
    """
@@ -63,17 +55,11 @@ class GeneratorService(object):
          pass
 
       block = generateBlock(seed, length, sequential, reader, self.store)
-      # Assign local ids to source names for a little compression.
-      localSourceMap = {}
-      localId = 0         
-      for bundle in block:
-         if len(bundle) > 1:
-            srcKey = bundle[1]
-            if not srcKey in localSourceMap:
-               localSourceMap[srcKey] = localId
-               localId += 1
-            bundle[1] = localSourceMap[srcKey]
-      localSourceMap = invert(localSourceMap);
+      capitalize(block)
+      condensePunctuation(block)
+      spaces(block)
+      localSourceMap = encodeSourceKeys(block)
+      block = map(serializeProto, block)
       return Response(json.dumps({ 'generated': block, 'sources': localSourceMap }))
 
    def get_source_list(self, request):

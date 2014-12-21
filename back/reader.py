@@ -1,5 +1,5 @@
 from json import loads
-from random import uniform, choice
+from random import uniform
 
 """
 A scanner for reading from a source text Index.
@@ -130,45 +130,3 @@ class MultiReader:
    def __progressCurrentReader(self):
       self.current += 1
       self.current %= len(self.readers)
-
-"""
-builds a list of terms based on the provided request parameters:
-   seed: The first term in the returned list. Must be a term recognized by the
-         provided reader.
-   length: The length of the returned list. Any integer.
-   sequential: The minimum length of a sequence read directly from a text. Any
-         integer.
-using the provided MultiReader 'reader' and the persistent 'store'.
-
-terms are returned as a list of lists l, each l containing a human-readable term
-at index 0, and, if the term is part of a sequential stretch, the source for that
-stretch at index 1.
-"""
-def generateBlock(seed, length, sequential, reader, store):
-   # Compose a list of generated terms.
-   seed = reader.previous()
-   generatedList = [[seed]]
-   pos = 0
-   for i in range(1, length + 1):
-      if i % sequential == 0:
-         # attempt a jump!
-         # TODO: make it so this uses the correct interface. the issue is that
-         # 'last' doesn't stay consistent after sequential next()s.
-         reader.last = generatedList[len(generatedList) - 1][0];
-         reader.switchIndex()
-         generatedList.append([reader.next()])
-         # avoid the position lookups if we're jumping on every term
-         if sequential > 1:
-            lastId = generatedList[len(generatedList) - 1][0]
-            srcKey = reader.getCurrentSourceKey()
-            pos = choice(loads(store.positions(lastId, srcKey)))
-      else:
-         # read the next term sequentially
-         sourceKey = reader.getCurrentSourceKey()
-         pos += 1
-         pos %= store.sourceLength(sourceKey)
-         generatedList.append([store.sourceAtPosition(sourceKey, pos), sourceKey])
-
-   for bundle in generatedList:
-      bundle[0] = store.term(bundle[0])
-   return generatedList
