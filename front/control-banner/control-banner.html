@@ -23,8 +23,9 @@
                <paper-spinner active></paper-spinner>
             </div>
          </div>
-         <div id="sources" class="banner menu">
-            <paper-radio-group horizontal layout multi selected="{{ selectedSources }}">
+         <div id="sources" class="banner menu" horizontal layout>
+            <info-icon on-click="{{ toggleShowBorder }}" self-center class="light"></info-icon>
+            <paper-radio-group horizontal layout flex multi selected="{{ selectedSources }}">
                <template repeat="{{ s in sources | dictToList }}">
                   <paper-radio-button flex toggles name="{{ s.value }}" label="{{ s.key }}">
                   </paper-radio-button>
@@ -41,6 +42,10 @@ Polymer('control-banner', {
          reflect: true
       },
       loading: {
+         value: false,
+         reflect: true
+      },
+      showBorder: {
          value: false,
          reflect: true
       },
@@ -69,6 +74,10 @@ Polymer('control-banner', {
       } else {
          this.hide(elem);
       }
+   },
+
+   toggleShowBorder: function() {
+      this.showBorder = !this.showBorder;
    },
 
    hide: function(elem) {

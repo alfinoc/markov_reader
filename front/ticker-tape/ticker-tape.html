@@ -3,7 +3,7 @@
 <polymer-element name="ticker-tape">
    <template>
       <link rel="stylesheet" type="text/css" href="ticker-tape.css">
-      <div id="text" on-click="{{ selectTerm }}">
+      <div id="text" on-click="{{ selectTerm }}" show-border?="{{ showBorder }}">
          <div id="placeholder"></div>
       </div>
       <content></content>
@@ -17,6 +17,10 @@ Polymer('ticker-tape', {
          reflect: true
       },
       playing: {
+         value: false,
+         reflect: true
+      },
+      showBorder: {
          value: false,
          reflect: true
       },

@@ -1,4 +1,4 @@
-#multibutton, circle-dot-icon {
+#multibutton, circle-dot-icon, info-icon {
   height: 20px;
   width: 20px;
   position: relative;
@@ -34,7 +34,18 @@ pause-icon, play-icon, paper-spinner {
   left: 0px;
   height: 100%;
   width: 100%;
+}
+
+pause-icon, play-icon, info-icon, paper-spinner {
   transition: fill 0.1s ease-in-out, opacity 0.1s ease-in-out;
+}
+
+info-icon {
+  cursor: pointer;
+}
+
+info-icon:hover {
+  fill: #C75646;
 }
 
 pause-icon:hover, play-icon:hover {
@@ -42,36 +53,36 @@ pause-icon:hover, play-icon:hover {
 }
 
 circle-dot-icon:hover {
-   fill: #8EB33B;
+  fill: #8EB33B;
 }
 
 :host {
-   letter-spacing: 2px;
-   position: absolute;
-   text-transform: uppercase;
-   z-index: 100;
+  letter-spacing: 2px;
+  position: absolute;
+  text-transform: uppercase;
+  z-index: 100;
 }
 
 .menu {
-   background-color: white;
-   color: black;
-   z-index: -1;
-   padding: 7px;
-   text-transform: none;
-   margin-top: 0px;
-   transition: margin-top ease-in-out 0.3s;
+  background-color: white;
+  color: black;
+  z-index: -1;
+  padding: 7px;
+  text-transform: none;
+  margin-top: 0px;
+  transition: margin-top ease-in-out 0.3s;
 }
 
 .menu.hide {
-   margin-top: -50px;
+  margin-top: -50px;
 }
 
 paper-radio-group {
-   text-align: center;
+  text-align: center;
 }
 
 paper-radio-button {
-   padding: 0px !important;
+  padding: 0px !important;
 }
 
 paper-radio-button::shadow #onRadio {
@@ -87,5 +98,5 @@ paper-radio-button::shadow #ink {
 }
 
 a {
-   display: flex;
+  display: flex;
 }

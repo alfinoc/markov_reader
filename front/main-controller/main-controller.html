@@ -21,9 +21,11 @@
       </style>
       <control-banner seed="{{ seed }}" selectedSources="{{ sources }}"
                       on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}"
-                      playing="{{ playing }}" loading="{{ loading }}">
+                      playing="{{ playing }}" loading="{{ loading }}"
+                      showBorder="{{ showBorder }}">
       </control-banner>
-      <ticker-tape id="tape" class="light" playing="{{ playing }}" selectedTerm="{{ selectedTerm }}">
+      <ticker-tape id="tape" class="light" playing="{{ playing }}"
+                   selectedTerm="{{ selectedTerm }}" showBorder="{{ showBorder }}">
          <text-generator seed="{{ seed }}" sources="{{ sources }}" loading="{{ loading }}">
          </text-generator>
       </ticker-tape>
@@ -61,6 +63,11 @@ Polymer('main-controller', {
 
       selectedTerm: {
          value: '',
+         reflect: true
+      },
+
+      showBorder: {
+         value: false,
          reflect: true
       },
 
