@@ -1,4 +1,4 @@
-#multibutton, circle-dot-icon, info-icon {
+#multibutton, circle-dot-icon, texture-icon {
   height: 20px;
   width: 20px;
   position: relative;
@@ -36,15 +36,15 @@ pause-icon, play-icon, paper-spinner {
   width: 100%;
 }
 
-pause-icon, play-icon, info-icon, paper-spinner {
+pause-icon, play-icon, texture-icon, paper-spinner {
   transition: fill 0.1s ease-in-out, opacity 0.1s ease-in-out;
 }
 
-info-icon {
+texture-icon {
   cursor: pointer;
 }
 
-info-icon:hover {
+:host([showBorder]) texture-icon, texture-icon:hover {
   fill: #C75646;
 }
 

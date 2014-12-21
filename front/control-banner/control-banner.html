@@ -24,13 +24,13 @@
             </div>
          </div>
          <div id="sources" class="banner menu" horizontal layout>
-            <info-icon on-click="{{ toggleShowBorder }}" self-center class="light"></info-icon>
             <paper-radio-group horizontal layout flex multi selected="{{ selectedSources }}">
                <template repeat="{{ s in sources | dictToList }}">
                   <paper-radio-button flex toggles name="{{ s.value }}" label="{{ s.key }}">
                   </paper-radio-button>
                </template>
             </paper-radio-group>
+            <texture-icon on-click="{{ toggleShowBorder }}" self-center class="light"></texture-icon>
          </div>
    </template>
    <script>

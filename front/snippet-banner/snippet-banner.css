@@ -49,7 +49,7 @@
 .left > div, .right > div {
   position: absolute;
   top: 0px;
-  width: 1000px;
+  white-space: nowrap;
 }
 
 .left, .right, #pivot {
