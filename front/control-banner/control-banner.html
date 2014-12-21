@@ -32,6 +32,11 @@
             </paper-radio-group>
             <texture-icon on-click="{{ toggleShowBorder }}" self-center class="light"></texture-icon>
          </div>
+         <core-ajax id="ajax" url="../../available" handleAs="json"
+                    on-core-response="{{ loadSources }}" on-core-error="{{ onError }}"
+                    loading="{{ loading }}"></core-ajax>
+         <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
+                   class="dark"></paper-toast>
    </template>
    <script>
 
@@ -50,15 +55,25 @@ Polymer('control-banner', {
          reflect: true
       },
       // Map from source display name to key.
-      sources: {
-         'Wuthering Heights': 'wutheringheights.txt',
-         'Dracula': 'dracula.txt'
-      },
+      sources: {},
       // List of source keys that are selected.
       selectedSources: {
          value: [],
          reflect: true
       }
+   },
+
+   domReady: function() {
+      this.$.ajax.go();
+   },
+
+   loadSources: function(e) {
+      this.sources = e.detail.response;
+   },
+
+   onError: function(mesg) {
+      this.$.ajaxerror.show();
+      console.log(mesg);
    },
 
    toggleSourceMenu: function() {

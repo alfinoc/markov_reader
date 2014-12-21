@@ -8,14 +8,9 @@
    <template>
       <link rel="stylesheet" type="text/css" href="../control-banner/banner.css">
       <link rel="stylesheet" type="text/css" href="snippet-banner.css">
-      <core-ajax
-         id="ajax"
-         url="../../source"
-         params="{{ requestParams }}"
-         handleAs="json"
-         on-core-response="{{ handleResponse }}"
-         on-core-error="{{ onError }}"
-         loading="{{ loading }}"></core-ajax>
+      <core-ajax id="ajax" url="../../source" params="{{ requestParams }}"
+                 handleAs="json" on-core-response="{{ handleResponse }}"
+                 on-core-error="{{ onError }}" loading="{{ loading }}"></core-ajax>
          <template if="{{ left && pivot && right }}">
             <div class="collapseable" hide?="{{ !positions || positions.length == 0 }}">
                <div id="wrapper" horizontal layout>

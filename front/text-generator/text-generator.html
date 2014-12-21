@@ -99,9 +99,7 @@ Polymer('text-generator', {
 
    fillBuffer: function() {
       if (!this.loading && this.buffer.length < this.minBufferSize) {
-         console.log('attempt buffer fill');
          if (this.validRequest()) {
-            console.log('  firing ajax request, buffer size: ' + this.buffer.length);
             this.loading = true;
             this.$.ajax.go();
          } else {

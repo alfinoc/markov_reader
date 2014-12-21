@@ -78,6 +78,7 @@ class GeneratorService(object):
          return BadRequest('Required param: terms.')
       try:
          terms = filter(lambda s : len(s) > 0, request.args['terms'].split(','))
+         terms = map(lambda s : s.lower(), terms)
       except:
          return BadRequest('Malformed JSON term list.')
       try:

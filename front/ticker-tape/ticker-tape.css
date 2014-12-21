@@ -46,14 +46,6 @@
   transition: none;
 }
 
-span:not([punctuation]):not(first-child)::before { 
-  content: ' ';
-}
-
-span[capitalize] {
-  text-transform: capitalize;
-}
-
 span[selected] {
   text-shadow: 2px 2px 2px #BBB;
   color: black;

@@ -133,31 +133,10 @@ Polymer('ticker-tape', {
       } else {
          initialHeight = placeholder.clientHeight;
       }
-      var lastWasTerminator = true;
-      var lastSrc = '';
-      var appendNextSpan = function() {
-         var term = this.generator.next();
-         // Propagate empty buffer case. Pause and wait until the text-generator
-         // hits play again (on load).
-         if (term == undefined) {
-            this.pause();
-            return undefined;
-         }
-         var span = document.createElement('span');
-         if (lastWasTerminator)
-            span.setAttribute('capitalize', '');
-         if ((lastWasTerminator = isTerminator(term[0])) || isBridge(term[0]))
-            span.setAttribute('punctuation', '');
-         span.setAttribute('source', term[1]);
-         lastSrc = term[1];
-         span.innerHTML = term[0];
-         placeholder.appendChild(span);
-         return span;
-      }.bind(this);
-
+      
       // Fill the placeholder with words until it overflows to a second line.
       do {
-         var next = appendNextSpan();
+         var next = this.appendNextSpan(placeholder);
          // The buffer is empty :( Wait for the callback to be and try again.
          if (next == undefined)
             return;
@@ -170,7 +149,22 @@ Polymer('ticker-tape', {
       newLine.innerHTML = placeholder.innerHTML;
       placeholder.innerHTML = '';
       return newLine;
-      // TODO(bug): This doesn't handle hiphen word breaks well.
+   },
+
+   appendNextSpan: function(parent) {
+      var term = this.generator.next();
+      // Propagate empty buffer case. Pause and wait until the text-generator
+      // hits play again (on load).
+      if (term == undefined) {
+         this.pause();
+         return undefined;
+      }
+      var span = document.createElement('span');
+      span.innerHTML = term[0];
+      span.setAttribute('source', term[1]);
+      span.setAttribute('lookup', term[2]);
+      parent.appendChild(span);
+      return span;
    },
 
    viewHeight: function() {
@@ -183,7 +177,7 @@ Polymer('ticker-tape', {
       });
       if (e.target.tagName == 'SPAN') {
          e.target.setAttribute('selected', '');
-         this.selectedTerm = e.target.innerHTML.trim();
+         this.selectedTerm = e.target.getAttribute('lookup').trim();
       }
    }
 });
