@@ -14,15 +14,19 @@
          <template if="{{ left && pivot && right }}">
             <div class="collapseable" hide?="{{ !positions || positions.length == 0 }}">
                <div id="wrapper" horizontal layout>
-                  <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
-                     <left-icon></left-icon>
-                  </div>
+                  <template if="{{ positions.length > 1 }}">
+                     <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
+                        <left-icon></left-icon>
+                     </div>
+                  </template>
                   <div class="left" flex><div>{{ left }}</div></div>
                   <span id="pivot">{{ pivot }}</span>
                   <div class="right" flex><div>{{ right }}</div></div>
-                  <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
-                     <right-icon></right-icon>
-                  </div>
+                  <template if="{{ positions.length > 1 }}">
+                     <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
+                        <right-icon></right-icon>
+                     </div>
+                  </template>
                </div>
             </div>
          </template>
