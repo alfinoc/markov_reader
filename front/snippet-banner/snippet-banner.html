@@ -158,6 +158,10 @@ Polymer('snippet-banner', {
    },
 
    handleResponse: function(e) {
+      if (e.detail.response == '') {
+         this.onError('Empty snippet response.');
+         return;
+      }
       this.left = e.detail.response.left;
       this.right = e.detail.response.right;
 
