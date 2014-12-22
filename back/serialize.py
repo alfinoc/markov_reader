@@ -14,7 +14,7 @@ if not os.path.isfile(filename):
 print '  indexing \'{0}\''.format(filename)
 try:
    store = RedisWrapper()
-   ind = Index(filename)
+   ind = Index(filename, Dictionary('data/dict'))
    ind.serialize(store)
 except IOError:
    sys.exit('Error: could not find open Redis server at')

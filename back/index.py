@@ -102,8 +102,10 @@ words that follow w can be retrived in the form of a frequency distribution.
 source's key is the base of this filename.
 """
 class Index:
-   def __init__(self, filename):
+   def __init__(self, filename, englishDict=None):
       tokens = self.__getTokens(open(filename))
+      if (englishDict != None):
+         self.__adjustCapitalization(tokens, englishDict)
       self.dictionary = list(set(tokens))
       tokenToId = invertedMap(self.dictionary)
       self.sourceText = map(lambda str: tokenToId[str], tokens)
@@ -177,6 +179,20 @@ class Index:
       return self.filename
 
    """
+   attempts to impose uniform capitalization rules upon the source text. we're generally
+   conservative: we choose the lowercase version of the term if the term starts a clause
+   (since we need to account for quoted sentences) AND only it's lowercase form is found
+   in the dictionary.
+   """
+   def __adjustCapitalization(self, tokens, dict):
+      startsClause = True
+      for i in range(len(tokens)):
+         t = tokens[i]
+         if not t in dict and t.lower() in dict and startsClause:
+            tokens[i] = t.lower();
+         startsClause = t in noLeftSpace
+
+   """
    returns the whitespace tokens from the file, making each terminator punctuator its own
    token and removing all quotes (double and single)
    """
@@ -184,7 +200,7 @@ class Index:
       lexer = lex()
       tokenized = []
       for line in file:
-         lexer.input(line.lower())
+         lexer.input(line)
          while True:
            tok = lexer.token()
            if not tok: break
