@@ -1,0 +1,31 @@
+/*** SINGLE SOURCE RULES ***/
+
+{% for s in sources %}
+* /deep/ snippet-banner[source="{{ s.srcKey }}"] {
+   background-color: {{ s.color }};
+}
+
+* /deep/ snippet-banner[source="{{ s.srcKey }}"]::shadow .inheritColor {
+   color: {{ s.color }};
+}
+
+* /deep/ #text span[source="{{ s.srcKey }}"] {
+   border-bottom: 2px solid {{ s.color | rgba(0.3) }};
+}
+
+* /deep/ paper-radio-button[name="{{ s.srcKey }}"]::shadow #onRadio {
+  background-color: {{ s.color }};
+}
+{% endfor %}
+
+/*** BORDER TRANSITION RULES ***/
+
+{% for s1 in sources %}{% for s2 in sources %}{% if s1 != s2 %}
+* /deep/ #text span[source="{{ s1.srcKey }} {{ s2.srcKey }}"] {
+   -webkit-border-image:
+      -webkit-gradient(linear, 0 0, 100% 0,
+                       color-stop(0, {{ s1.color | rgba(0.3) }}),
+                       color-stop(1, {{ s2.color | rgba(0.3) }})) 100% 0;
+   border-bottom-width: 2px;
+}
+{% endif %}{% endfor %}{% endfor %}

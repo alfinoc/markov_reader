@@ -85,12 +85,8 @@ paper-radio-button {
   padding: 0px !important;
 }
 
-paper-radio-button::shadow #onRadio {
-  background-color: black;
-}
-
 paper-radio-button::shadow #ink {
-  color: #E09690;
+  color: black;
 }
 
 .textbutton, paper-slider, pause-icon, play-icon, circle-dot-icon {

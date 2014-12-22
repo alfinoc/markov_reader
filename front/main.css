@@ -34,24 +34,6 @@ textarea, input {
    font-family: inherit;
 }
 
-* /deep/ snippet-banner[source="wutheringheights.txt"] {
-   background-color: rgb(199, 86, 70); /* #C75646 */
-}
-
-* /deep/ snippet-banner[source="dracula.txt"] {
-   background-color: rgb(33, 134, 147); /* #218693 */
-}
-
-/* A hack to solve the (Polymer?) bug that assigns incorrect colors
-   if you use inherit: color; on these bad boys. */
-* /deep/ snippet-banner[source="wutheringheights.txt"]::shadow .inheritColor {
-   color: rgb(199, 86, 70);
-}
-
-* /deep/ snippet-banner[source="dracula.txt"]::shadow .inheritColor {
-   color: rgb(33, 134, 147);
-}
-
 * /deep/ #text {
    font-family: 'Klinic Slab';
 }
@@ -59,26 +41,6 @@ textarea, input {
 * /deep/ #text span {
    border-width: 0px;
    border-bottom-width: 0px;
-}
-
-* /deep/ #text span[source="wutheringheights.txt"] {
-   border-bottom: 2px solid rgba(199, 86, 70, 0.3); /* #C75646 */
-}
-
-* /deep/ #text span[source="dracula.txt"] {
-   border-bottom: 2px solid rgba(33, 134, 147, 0.3); /* #218693 */
-}
-
-* /deep/ #text span[source="dracula.txt wutheringheights.txt"] {
-   -webkit-border-image: -webkit-gradient(linear, 0 0, 100% 0,
-      color-stop(0, rgba(33, 134, 147, 0.3)), color-stop(1, rgba(199, 86, 70, 0.3))) 100% 0;
-   border-bottom-width: 2px;
-}
-
-* /deep/ #text span[source="wutheringheights.txt dracula.txt"] {
-   -webkit-border-image: -webkit-gradient(linear, 0 0, 100% 0,
-      color-stop(0, rgba(199, 86, 70, 0.3)), color-stop(1, rgba(33, 134, 147, 0.3))) 100% 0;
-   border-bottom-width: 2px;
 }
 
 * /deep/ paper-toast {

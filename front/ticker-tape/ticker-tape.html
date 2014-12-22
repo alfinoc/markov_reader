@@ -135,8 +135,9 @@ Polymer('ticker-tape', {
       }
       
       // Fill the placeholder with words until it overflows to a second line.
+      var next;
       do {
-         var next = this.appendNextSpan(placeholder);
+         next = this.appendNextSpan(placeholder);
          // The buffer is empty :( Wait for the callback to be and try again.
          if (next == undefined)
             return;
@@ -148,6 +149,7 @@ Polymer('ticker-tape', {
       var newLine = document.createElement('div');
       newLine.innerHTML = placeholder.innerHTML;
       placeholder.innerHTML = '';
+      placeholder.appendChild(next);
       return newLine;
    },
 
