@@ -14,7 +14,7 @@ def _srcUnion(src1, src2):
 returns the union of two protos
 """
 def _conjoinProto(p1, p2):
-   return getProto(p1['term'] + p2['term'], _srcUnion(p1['src'], p2['src']), p1['term'])
+   return getProto(p1['term'] + p2['term'], _srcUnion(p1['src'], p2['src']), p1['lookup'])
 
 """
 returns a new map where each (key, value) pair is a (value, key) pair in
