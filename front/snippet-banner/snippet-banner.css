@@ -59,6 +59,17 @@
 .empty {
   font-style: italic;
   text-align: center;
+  width: 100%;
+  background-color: inherit;
+}
+
+.hideable.hide {
+  opacity: 0;
+}
+
+.hideable {
+  opacity: 1;
+  transition: opacity ease-in-out 0.5s;
 }
 
 #wrapper {

@@ -14,22 +14,28 @@
       
       <div id="wrapper" horizontal layout>
          <template if="{{ !positions || positions.length == 0 }}">
-            <div class="empty" flex>no occurrences</div>
+            <div class="empty">no occurrences</div>
          </template>
-         <template if="{{ positions.length > 0 && left && pivot && right }}">
-            <template if="{{ positions.length > 1 }}">
-               <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
-                  <left-icon></left-icon>
-               </div>
-            </template>
-            <div class="left" flex><div>{{ left }}</div></div>
+         <template if="{{ positions.length > 1 }}">
+            <div id="leftbutton" on-click="{{ decrement }}" class="inheritColor">
+               <left-icon></left-icon>
+            </div>
+         </template>
+         <div class="left" flex>
+            <div id="l_buf1" class="hideable"></div>
+            <div id="l_buf2" class="hideable hide"></div>
+         </div>
+         <template if="{{ positions.length > 0 }}">
             <span id="pivot">{{ pivot }}</span>
-            <div class="right" flex><div>{{ right }}</div></div>
-            <template if="{{ positions.length > 1 }}">
-               <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
-                  <right-icon></right-icon>
-               </div>
-            </template>
+         </template>
+         <div class="right" flex>
+            <div id="r_buf1" class="hideable"></div>
+            <div id="r_buf2" class="hideable hide"></div>
+         </div>
+         <template if="{{ positions.length > 1 }}">
+            <div id="rightbutton" on-click="{{ increment }}" class="inheritColor">
+               <right-icon></right-icon>
+            </div>
          </template>
       </div>
       <paper-progress indeterminate hide?="{{ !loading }}"></paper-progress>
@@ -79,7 +85,6 @@ Polymer('snippet-banner', {
       // Cache hit.
       var entry = this.snippetCache[this.positionIndex];
       if (entry) {
-         this.pivot = entry.pivot;
          this.left = entry.left;
          this.right = entry.right;
 
@@ -101,10 +106,49 @@ Polymer('snippet-banner', {
          if (posQuery) {
             posQuery.getPositions(this.source, this.pivot, function(positions) {
                this.positions = positions;
-               this.left = this.right = '';
+               if (this.positions.length == 0)
+                  this.left = this.right = '';
             }.bind(this));
          }
       }
+   },
+
+   leftChanged: function() {
+      this.async(function() {
+         this.bufferSwap(this.$.l_buf1, this.$.l_buf2, this.left);
+      });
+   },
+
+   rightChanged: function(before, after) {
+      this.async(function() {
+         this.bufferSwap(this.$.r_buf1, this.$.r_buf2, this.right);
+      });
+   },
+
+   bufferSwap: function(buf1, buf2, newContent) {
+      var prev, next;
+      if (this.isShown(buf1)) {
+         prev = buf1;
+         next = buf2;
+      } else {
+         next = buf1;
+         prev = buf2;
+      }
+      this.hide(prev);
+      next.innerHTML = newContent;
+      this.show(next);
+   },
+
+   show: function(elt) {
+      elt.classList.remove('hide');
+   },
+
+   hide: function(elt) {
+      elt.classList.add('hide');
+   },
+
+   isShown: function(elt) {
+      return !elt.classList.contains('hide');
    },
 
    positionsChanged: function() {
