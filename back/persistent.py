@@ -29,6 +29,9 @@ class RedisWrapper:
    def sourceName(self, key):
       return self.store.get(key + ':name')
 
+   def setSourceName(self, key, name):
+      return self.store.set(key + ':name', name)
+
    def sourceLength(self, key):
       return self.store.llen(key + ':src')
 
