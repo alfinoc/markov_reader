@@ -3,13 +3,9 @@
 
 <polymer-element name="text-generator">
    <template>
-      <core-ajax
-         id="ajax"
-         url="../../generate"
-         params="{{ requestParams }}"
-         handleAs="json"
-         on-core-response="{{ handleNewBlock }}"
-         on-core-error="{{ onError }}"></core-ajax>
+      <core-ajax id="ajax" url="../../generate" params="{{ requestParams }}"
+                 handleAs="json" on-core-response="{{ handleNewBlock }}"
+                 on-core-error="{{ onError }}"></core-ajax>
       <paper-toast id="nosource" text="Select at least one source!"
                    class="dark"></paper-toast>
       <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
@@ -50,6 +46,10 @@ Polymer('text-generator', {
       this.buffer = [];
       this.sources = [];
       this.minBufferSize = 300;
+   },
+
+   reset: function() {
+      this.buffer = [];
    },
 
    handleNewBlock: function(e) {

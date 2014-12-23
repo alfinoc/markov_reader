@@ -21,8 +21,8 @@
       </style>
       <control-banner seed="{{ seed }}" selectedSources="{{ sources }}"
                       on-play="{{ dispatchPlay }}" on-pause="{{ dispatchPause }}"
-                      playing="{{ playing }}" loading="{{ loading }}"
-                      showBorder="{{ showBorder }}">
+                      on-reset="{{ dispatchReset }}" showBorder="{{ showBorder }}"
+                      playing="{{ playing }}" loading="{{ loading }}">
       </control-banner>
       <ticker-tape id="tape" class="light" playing="{{ playing }}"
                    selectedTerm="{{ selectedTerm }}" showBorder="{{ showBorder }}">
@@ -77,6 +77,10 @@ Polymer('main-controller', {
 
       dispatchPause: function() {
          this.$.tape.pause();
+      },
+
+      dispatchReset: function() {
+         this.$.tape.reset();
       }
    }
 });

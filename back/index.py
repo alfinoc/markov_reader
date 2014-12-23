@@ -7,18 +7,20 @@ noLeftSpace = terminators + ',:;'
 literals = noLeftSpace + '/='
 tokens = (
    'AMP',
+   'DOLLA',
    'EN_DASH',
    'EM_DASH',
    'ELLIPSIS',
    'WORD',
 )
+t_DOLLA    = r'\$'
 t_AMP      = r'&'
 t_EN_DASH  = r'--'
 t_EM_DASH  = r'---'
 t_ELLIPSIS = r'\.\.\.'
 t_WORD     = r'\w+-\w+|\w+\'\w+|\w+'  # Allow all words, contractions, and dashed words.
-garbage = ' \t\n()[]"*-_{}$'
-t_ignore  = garbage + "'"
+garbage = ' \t\n()[]"*_{}'
+t_ignore  = garbage + "'-"
 
 # Locate the leftmost value in 'a' exactly equal to 'x'
 def index(a, x):

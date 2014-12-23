@@ -23,7 +23,7 @@
                <paper-spinner active></paper-spinner>
             </div>
          </div>
-         <div id="sources" class="banner menu" horizontal layout>
+         <div id="sources" class="banner menu hide" horizontal layout>
             <paper-radio-group horizontal layout wrap multi flex selected="{{ selectedSources }}">
                <template repeat="{{ s in sources | dictToList }}">
                   <paper-radio-button toggles name="{{ s.value }}" label="{{ s.key }}">
@@ -69,6 +69,11 @@ Polymer('control-banner', {
 
    loadSources: function(e) {
       this.sources = e.detail.response;
+      this.selectedSources = Object.keys(this.sources);
+   },
+
+   selectedSourcesChanged: function() {
+      this.reset();
    },
 
    onError: function(mesg) {
@@ -116,6 +121,10 @@ Polymer('control-banner', {
 
    pause: function() {
       this.fire('pause');
+   },
+
+   reset: function() {
+      this.fire('reset');
    }
 });
 

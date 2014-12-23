@@ -42,6 +42,19 @@ Polymer('ticker-tape', {
       this.$.text.style.top = '0px';
    },
 
+   reset: function() {
+      this.pause();
+      this.$.text.children.array().forEach(function(elt) {
+         if (elt.id != 'placeholder')
+            elt.remove();
+         else
+            elt.innerHTML = '';
+      });
+      this.selectedTerm = null;
+      if (this.generator)
+         this.generator.reset();
+   },
+
    periodicRefresh: function() {
       this.pauseAnimation();
       this.refreshBuffer();
