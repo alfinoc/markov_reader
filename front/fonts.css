@@ -32,3 +32,8 @@
    font-weight: lighter;
 }
 
+@font-face {
+   font-family: "Klinic_Backup";
+   src: url(../../Klinic.ttf);
+   font-style: normal;
+}
