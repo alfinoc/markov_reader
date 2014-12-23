@@ -7,7 +7,7 @@ from persistent import RedisWrapper
 from reader import MultiReader
 from index import SerialIndex, invertedMap
 from generator import generateBlock, serializeProto, getProto
-from formatter import capitalize, condensePunctuation, spaces, encodeSourceKeys
+from prettify import capitalize, condensePunctuation, spaces, encodeSourceKeys
 
 """
 returns the value in 'dict' for 'key', or 'default' if there is none.
