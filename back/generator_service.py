@@ -142,8 +142,7 @@ class GeneratorService(object):
          Rule('/meta', endpoint='meta_data'),
          Rule('/available', endpoint='source_list'),
          Rule('/source', endpoint='snippet'),
-         Rule('/<all>', redirect_to='play/api.html'),
-
+         Rule('/<all>', redirect_to='play'),
       ])
       self.store = RedisWrapper()
 
@@ -162,6 +161,3 @@ class GeneratorService(object):
          return getattr(self, 'get_' + endpoint)(request, **values)
       except HTTPException, e:
          return e
-
-   def get_otherwise(self, request):
-      return Response('api coming soon...')
