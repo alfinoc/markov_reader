@@ -2,7 +2,7 @@
 
 <polymer-element name="position-cache">
    <template>
-      <core-ajax id="ajax" url="../../meta" handleAs="json" loading="{{ loading }}"
+      <core-ajax id="ajax" url="meta" handleAs="json" loading="{{ loading }}"
                  on-core-response="{{ handleResponse }}" on-core-error="{{ onError }}"></core-ajax>
       <paper-toast id="ajaxerror" text="Uh oh, that's a server error." class="dark"></paper-toast>
    </template>

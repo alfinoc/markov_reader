@@ -7,7 +7,7 @@
       <link rel="stylesheet" type="text/css" href="banner.css">
       <link rel="stylesheet" type="text/css" href="control-banner.css">
          <div  horizontal layout class="banner">
-            <a href="../api.html"><circle-dot-icon></circle-dot-icon></a>
+            <a href="api"><circle-dot-icon></circle-dot-icon></a>
             <div flex></div>
             <div class="textbutton" on-click="{{ toggleSourceMenu }}">Sources</div>
             <div flex></div>
@@ -32,7 +32,7 @@
             </paper-radio-group>
             <texture-icon on-click="{{ toggleShowBorder }}" self-center class="light"></texture-icon>
          </div>
-         <core-ajax id="ajax" url="../../available" handleAs="json"
+         <core-ajax id="ajax" url="available" handleAs="json"
                     on-core-response="{{ loadSources }}" on-core-error="{{ onError }}"
                     loading="{{ loading }}"></core-ajax>
          <paper-toast id="ajaxerror" text="Uh oh, that's a server error."
@@ -69,7 +69,11 @@ Polymer('control-banner', {
 
    loadSources: function(e) {
       this.sources = e.detail.response;
-      this.selectedSources = Object.keys(this.sources);
+      this.selectedSources = this.values(this.sources);
+   },
+
+   values: function(obj) {
+      return Object.keys(obj).map(function(k) { return obj[k]; });
    },
 
    selectedSourcesChanged: function() {

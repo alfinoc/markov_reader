@@ -3,7 +3,7 @@
 
 <polymer-element name="text-generator">
    <template>
-      <core-ajax id="ajax" url="../../generate" params="{{ requestParams }}"
+      <core-ajax id="ajax" url="generate" params="{{ requestParams }}"
                  handleAs="json" on-core-response="{{ handleNewBlock }}"
                  on-core-error="{{ onError }}"></core-ajax>
       <paper-toast id="nosource" text="Select at least one source!"

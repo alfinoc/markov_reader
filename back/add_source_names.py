@@ -13,3 +13,4 @@ from persistent import RedisWrapper
 r = RedisWrapper()
 for key, name in names:
    r.setSourceName(key, name)
+r.store.save()

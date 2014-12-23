@@ -142,7 +142,7 @@ class GeneratorService(object):
          Rule('/meta', endpoint='meta_data'),
          Rule('/available', endpoint='source_list'),
          Rule('/source', endpoint='snippet'),
-         Rule('/<all>', redirect_to='play'),
+         Rule('/<all>', redirect_to='api'),
       ])
       self.store = RedisWrapper()
 
