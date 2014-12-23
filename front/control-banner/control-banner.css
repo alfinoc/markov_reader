@@ -74,7 +74,7 @@ circle-dot-icon:hover {
 }
 
 .menu.hide {
-  margin-top: -50px;
+  margin-top: -60px;
 }
 
 paper-radio-group {
@@ -82,11 +82,18 @@ paper-radio-group {
 }
 
 paper-radio-button {
-  padding: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  padding-left: 7px !important;
+  padding-right: 7px !important;
 }
 
 paper-radio-button::shadow #ink {
   color: black;
+}
+
+paper-radio-button::shadow #radioLabel {
+  margin-left: 0px;
 }
 
 .textbutton, paper-slider, pause-icon, play-icon, circle-dot-icon {

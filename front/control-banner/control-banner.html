@@ -24,9 +24,9 @@
             </div>
          </div>
          <div id="sources" class="banner menu" horizontal layout>
-            <paper-radio-group horizontal layout flex multi selected="{{ selectedSources }}">
+            <paper-radio-group horizontal layout wrap multi flex selected="{{ selectedSources }}">
                <template repeat="{{ s in sources | dictToList }}">
-                  <paper-radio-button flex toggles name="{{ s.value }}" label="{{ s.key }}">
+                  <paper-radio-button toggles name="{{ s.value }}" label="{{ s.key }}">
                   </paper-radio-button>
                </template>
             </paper-radio-group>

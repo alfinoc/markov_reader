@@ -17,7 +17,8 @@ t_EN_DASH  = r'--'
 t_EM_DASH  = r'---'
 t_ELLIPSIS = r'\.\.\.'
 t_WORD     = r'\w+-\w+|\w+\'\w+|\w+'  # Allow all words, contractions, and dashed words.
-t_ignore  = ' \t\n()[]"*-\'_{}$'
+garbage = ' \t\n()[]"*-_{}$'
+t_ignore  = garbage + "'"
 
 # Locate the leftmost value in 'a' exactly equal to 'x'
 def index(a, x):
@@ -202,9 +203,12 @@ class Index:
       for line in file:
          lexer.input(line)
          while True:
-           tok = lexer.token()
-           if not tok: break
-           tokenized.append(tok.value)
+            tok = lexer.token()
+            if not tok: break
+            term = tok.value
+            for ch in garbage:
+               term = term.replace(ch, '')
+            tokenized.append(term)
       return tokenized
 
    """

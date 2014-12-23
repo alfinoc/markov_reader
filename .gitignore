@@ -6,3 +6,4 @@ front/bower_components
 data/*
 back/profile*
 *.json
+tests

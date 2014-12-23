@@ -1,7 +1,7 @@
 SRCS = ['wutheringheights.txt', 'dracula.txt', 'warandpeace.txt', 'prideandprejudice.txt',
         'taleoftwocities.txt', 'sherlockholmes.txt', 'countofmontecristo.txt']
-COLORS = ['#C75646', '#218693', '#C8A0D1', '#8EB33B', '#D0B03C']
-# RED, TEAL, PURPLE, GREEN, YELLOW
+COLORS = ['#C75646', '#218693', '#C8A0D1', '#8EB33B', '#795548', '#72B3CC', '#5D5D5D']
+# RED, TEAL, PURPLE, GREEN, BROWN, BLUE, GREY
 
 def triple(hex):
    if len(hex) < 6:
