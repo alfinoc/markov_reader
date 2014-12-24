@@ -1,39 +1,40 @@
 @font-face {
    font-family: "Inconsolata_Backup";
-   src: url(../../inconsolata.ttf);
+   src: url(../inconsolata.ttf);
    font-style: normal;
 }
 
 @font-face {
    font-family: "Roboto_Backup";
-   src: url(../../Roboto-Regular.ttf);
+   src: url(../Roboto-Regular.ttf);
    font-style: normal;
    font-weight: normal;
 }
 
 @font-face {
    font-family: "Roboto_Backup";
-   src: url(../../Roboto-Italic.ttf)
+   src: url(../Roboto-Italic.ttf)
    font-style: italic;
    font-weight: normal;
 }
 
 @font-face {
    font-family: "Roboto_Backup";
-   src: url(../../Roboto-Light.ttf);
+   src: url(../Roboto-Light.ttf);
    font-style: normal;
    font-weight: lighter;
 }
 
 @font-face {
    font-family: "Roboto_Backup";
-   src: url(../../Roboto-LightItalic.ttf)
+   src: url(../Roboto-LightItalic.ttf);
    font-style: italic;
    font-weight: lighter;
 }
 
 @font-face {
    font-family: "Klinic_Backup";
-   src: url(../../Klinic.ttf);
+   src: url(../Klinic-Regular.ttf);
    font-style: normal;
+   font-weight: normal;
 }

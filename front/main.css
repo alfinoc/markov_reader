@@ -35,7 +35,7 @@ textarea, input {
 }
 
 * /deep/ #text {
-   font-family: 'Klinic Slab', 'Klinic_Backup', 'Georgia', 'serif';
+   font-family: 'Klinic Slab', 'Klinic_Backup', inherit;
 }
 
 * /deep/ #text span {
