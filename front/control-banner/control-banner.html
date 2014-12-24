@@ -64,6 +64,7 @@ Polymer('control-banner', {
    },
 
    domReady: function() {
+      this.$.ajax.url = window.AJAX_HOST_PREFIX + this.$.ajax.url;
       this.$.ajax.go();
    },
 

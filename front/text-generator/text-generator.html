@@ -48,6 +48,10 @@ Polymer('text-generator', {
       this.minBufferSize = 300;
    },
 
+   domReady: function() {
+      this.$.ajax.url = window.AJAX_HOST_PREFIX + this.$.ajax.url;
+   },
+
    reset: function() {
       this.buffer = [];
    },

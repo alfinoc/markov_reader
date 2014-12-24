@@ -21,6 +21,10 @@ Polymer('position-cache', {
       this.waiting = {};
    },
 
+   domReady: function() {
+      this.$.ajax.url = window.AJAX_HOST_PREFIX + this.$.ajax.url;
+   },
+
    getPositions: function(src, term, callback) {
       var prev = window.positionCache_get(src, term);
       if (prev) {
